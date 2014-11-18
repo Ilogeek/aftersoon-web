@@ -1,6 +1,6 @@
 {
   "name": "aftersoon",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "Base du projet R&D",
   "main": "index.js",
   "scripts": {
