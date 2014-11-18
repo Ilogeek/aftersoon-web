@@ -1,0 +1,34 @@
+var express = require('express');
+var http = require('http');
+var mongoose = require('mongoose');
+var app = express();
+
+var uristring = process.env.MONGOLAB_URI;
+var theport = process.env.PORT || 5000;
+
+app.set('port', (process.env.PORT || 5000))
+app.use(express.static(__dirname + '/public'))
+
+var connected = "nop";
+
+mongoose.connect(uristring, function (err, res) {
+  if (err) {
+  console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+  connected = err;
+  } else {
+  console.log ('Succeeded connected to: ' + uristring);
+  connected = "yup";
+  }
+});
+
+app.get('/', function(request, response) {
+  response.send('Hello '+ connected);
+});
+
+app.get('/hugo', function(request, response) {
+	response.send('Page')
+});
+
+app.listen(app.get('port'), function() {
+  console.log("Node app is running at localhost:" + app.get('port'))
+})

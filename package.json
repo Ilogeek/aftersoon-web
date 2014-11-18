@@ -1,0 +1,29 @@
+{
+  "name": "aftersoon",
+  "version": "0.1",
+  "description": "Base du projet R&D",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "~4.9.x",
+    "mongoose": "*",
+    "http": "*",
+    "pubnub": "*"
+
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ilogeek/aftersoon-web"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "MIT"
+}
