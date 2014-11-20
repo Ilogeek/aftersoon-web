@@ -17,17 +17,6 @@ mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
   }
 });
 
-var Schema = mongoose.Schema; 
-var UserSchema = new Schema({
-    /*id: Schema.ObjectId,
-    email: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true }
-    nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},*/
-    telephone: String,
-    //adresse: { type:String, required: true},
-    gps: String
-});
-
 var UserModel = require('./model_user')(mongoose);//mongoose.model('UserSchema', UserSchema);
 var Hugo = new UserModel({'telephone':'test', 'password': ':)'});
 
