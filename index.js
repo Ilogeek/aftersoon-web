@@ -29,7 +29,7 @@ var UserSchema = new Schema({
 });
 
 var UserModel = require('./model_user')(mongoose);//mongoose.model('UserSchema', UserSchema);
-var Hugo = new UserModel({'telephone':'test'});
+var Hugo = new UserModel({'telephone':'test', 'password': ':)'});
 
 // Root
 app.get('/', function(request, response) {
