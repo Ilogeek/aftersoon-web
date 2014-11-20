@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
   }
 });
 
-var UserModel = require("./model_user")(mongoose);
+var UserModel = require(./model_user)(mongoose);
 var Hugo = new models.UserModel({'telephone':'test'});
 
 // Root
