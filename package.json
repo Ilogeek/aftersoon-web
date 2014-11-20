@@ -10,8 +10,8 @@
     "express": "~4.9.x",
     "mongoose": "*",
     "http": "*",
-    "pubnub": "*"
-
+    "pubnub": "*",
+    "bcrypt": "*"
   },
   "engines": {
     "node": "0.10.x"
