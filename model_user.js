@@ -1,15 +1,14 @@
 module.exports = function(mongoose) {
-/*var mongoose = require('mongoose'),
+var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
-    SALT_WORK_FACTOR = 10;*/
+    SALT_WORK_FACTOR = 10;
 
-//var mongoose = require('mongoose';)
 var Schema = mongoose.Schema; 
 
 var UserSchema = new Schema({
-    /*id: Schema.ObjectId,
-    email: { type: String, required: true, index: { unique: true } },
+    id: Schema.ObjectId,
+    /*email: { type: String, required: true, index: { unique: true } },
     password: { type: String, required: true }
     nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},*/
     telephone: String,
@@ -17,7 +16,7 @@ var UserSchema = new Schema({
     gps: String
 });
  
-/*UserSchema.pre(save, function(next) {
+UserSchema.pre(save, function(next) {
     var user = this;
  
 // only hash the password if it has been modified (or is new)
@@ -45,7 +44,7 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
         if (err) return cb(err);
         cb(null, isMatch);
     });
-};*/
+};
 
     return mongoose.model('UserSchema', UserSchema);
 
