@@ -3,7 +3,9 @@ module.exports = function(mongoose) {
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = 10;*/
- 
+
+var Schema = mongoose.Schema; 
+
 var UserSchema = new Schema({
     id: Schema.ObjectId,
     email: { type: String, required: true, index: { unique: true } },
@@ -44,6 +46,6 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
     });
 };*/
 
-    return mongoose.model('User', UserSchema);
+    return mongoose.model('UserSchema', UserSchema);
 
 }

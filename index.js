@@ -17,6 +17,8 @@ mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
   }
 });
 
+var UserModel = require(./model_user);
+
 // Root
 app.get('/', function(request, response) {
   response.send('Hello');
