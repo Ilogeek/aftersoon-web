@@ -4,12 +4,12 @@ var mongoose = require('mongoose'),
     SALT_WORK_FACTOR = 10;
  
 var UserSchema = new Schema({
-    id: Schema.ObjectId,
-    email: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true }
-    nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
+    //id: Schema.ObjectId,
+    //email: { type: String, required: true, index: { unique: true } },
+    //password: { type: String, required: true }
+    //nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
     telephone: String,
-    adresse: { type:String, required: true},
+    //adresse: { type:String, required: true},
     gps: String
 });
  
