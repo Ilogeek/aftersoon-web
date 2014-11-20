@@ -5,7 +5,7 @@ module.exports = function(mongoose) {
     SALT_WORK_FACTOR = 10;*/
 
 //var mongoose = require('mongoose';)
-//var Schema = mongoose.Schema; 
+var Schema = mongoose.Schema; 
 
 var UserSchema = new Schema({
     /*id: Schema.ObjectId,
