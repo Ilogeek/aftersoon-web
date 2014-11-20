@@ -53,8 +53,13 @@ var application_root = __dirname,
 var app = express.createServer();
 
 // Database
-
-mongoose.connect('mongodb://localhost/ecomm_database');
+mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
+  if (err) {
+  console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+  } else {
+  console.log ('Succeeded connected to: ' + uristring);
+  }
+});
 
 // Config
 
@@ -72,4 +77,4 @@ app.get('/api', function (req, res) {
 
 // Launch server
 
-app.listen(4242);
+app.listen((process.env.PORT || 5000));
