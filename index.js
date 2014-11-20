@@ -1,7 +1,7 @@
 var express = require('express');
 
 var http = require('http');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 
 var User = require(./model_user);
 
