@@ -38,7 +38,7 @@ app.get('/hugo', function(request, response) {
 	response.send('Page')
 });
 
-app.get('/users', function(request, response){
+/*app.get('/users', function(request, response){
 
   return User.find(function(err, users)) {
     if(!err) {
@@ -48,7 +48,7 @@ app.get('/users', function(request, response){
     }
   });
 
-});
+});*/
 
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
