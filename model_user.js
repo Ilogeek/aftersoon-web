@@ -1,11 +1,11 @@
-module.exports = {
+module.exports = function(mongoose) {
 /*var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = 10;*/
 
-var mongoose = require('mongoose';)
-var Schema = mongoose.Schema; 
+//var mongoose = require('mongoose';)
+//var Schema = mongoose.Schema; 
 
 var UserSchema = new Schema({
     /*id: Schema.ObjectId,

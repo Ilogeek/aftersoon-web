@@ -17,11 +17,12 @@ mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
   }
 });
 
-var UserModel = require("./model_user.js");
+var UserModel = require("./model_user")(mongoose);
+var Hugo = new models.UserModel({'telephone':'test'});
 
 // Root
 app.get('/', function(request, response) {
-  response.send('Hello');
+  response.send('Hello ' + Hugo.telephone);
 });
 
 // example
