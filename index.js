@@ -28,7 +28,7 @@ var UserSchema = new Schema({
     gps: String
 });
 
-var UserModel = require(./model_user)(mongoose);//mongoose.model('UserSchema', UserSchema);
+var UserModel = require('./model_user')(mongoose);//mongoose.model('UserSchema', UserSchema);
 var Hugo = new UserModel({'telephone':'test'});
 
 // Root
