@@ -28,6 +28,8 @@ mongoose.connect(uristring, function (err, res) {
   }
 });
 
+var users = require('./user_model')(mongoose);
+
 // Root
 app.get('/', function(request, response) {
   response.send('Hello '+ connected);

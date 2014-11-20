@@ -1,19 +1,20 @@
-var mongoose = require('mongoose'),
+module.exports = function(mongoose) {
+/*var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
-    SALT_WORK_FACTOR = 10;
+    SALT_WORK_FACTOR = 10;*/
  
 var UserSchema = new Schema({
-    //id: Schema.ObjectId,
-    //email: { type: String, required: true, index: { unique: true } },
-    //password: { type: String, required: true }
-    //nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
+    id: Schema.ObjectId,
+    email: { type: String, required: true, index: { unique: true } },
+    password: { type: String, required: true }
+    nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
     telephone: String,
-    //adresse: { type:String, required: true},
+    adresse: { type:String, required: true},
     gps: String
 });
  
-UserSchema.pre(save, function(next) {
+/*UserSchema.pre(save, function(next) {
     var user = this;
  
 // only hash the password if it has been modified (or is new)
@@ -41,6 +42,8 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
         if (err) return cb(err);
         cb(null, isMatch);
     });
-};
- 
-module.exports = mongoose.model(User, UserSchema);
+};*/
+
+    return mongoose.model('User', UserSchema);
+
+}
