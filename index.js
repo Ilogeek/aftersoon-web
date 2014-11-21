@@ -24,7 +24,7 @@ var Hugo = new UserModel({'password': 'test','telephone':'test'});
 
 // Root
 app.get('/', function(request, response) {
-  response.send('Hello ' + Hugo.telephone);
+  response.send('Hello ' + Hugo.id);
 });
 
 // example
