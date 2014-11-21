@@ -35,18 +35,12 @@ bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) {
 });*/
 
 UserSchema.methods.cryptPassword = function(password) {
-    /*bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) { 
-        // hash the password using our new salt
-        bcrypt.hash(user.password, salt, function(err, hash) {
-            this.password = hash;
-        });
-    });*/
-    this.password = "changed";
+    this.password = bcrypt.hashSync(password);
 };
  
-/*UserSchema.methods.comparePassword = function(candidatePassword) {
-    return UserSchema.methods.cryptPassword(candidatePassword) == this.password;
-};*/
+UserSchema.methods.comparePassword = function(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+};
 
     return mongoose.model('UserSchema', UserSchema);
 
