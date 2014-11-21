@@ -2,6 +2,8 @@ var express = require('express');
 
 var http = require('http');
 var mongoose = require('mongoose');
+var bcrypt = require('bcrypt');
+var SALT_WORK_FACTOR = 10;
 
 var app = express();
 
@@ -17,7 +19,7 @@ mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
   }
 });
 
-var UserModel = require('./model_user')(mongoose);//mongoose.model('UserSchema', UserSchema);
+var UserModel = require('./model_user')(mongoose, bcrypt, SALT_WORK_FACTOR);//mongoose.model('UserSchema', UserSchema);
 var Hugo = new UserModel({'telephone':'test', 'password': ':)'});
 
 // Root
