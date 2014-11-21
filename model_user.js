@@ -11,7 +11,7 @@ var UserSchema = new Schema({
     gps: String
 });
  
-UserSchema.pre(save, function(next) {
+/*UserSchema.pre(save, function(next) {
     var user = this;
  
 // only hash the password if it has been modified (or is new)
@@ -32,7 +32,7 @@ bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) {
 });
  
  
-});
+});*/
  
 UserSchema.methods.comparePassword = function(candidatePassword, cb) {
     bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
