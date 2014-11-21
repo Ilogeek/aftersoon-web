@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
     //email: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true },
+    password: { type: String/*, required: true */},
     //nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
     telephone: String,
     //adresse: { type:String, required: true},
