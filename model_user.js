@@ -35,11 +35,13 @@ bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) {
 });*/
 
 UserSchema.methods.cryptPassword = function(password) {
-    this.password = bcrypt.hashSync(password);
+    var salt = bcrypt.genSaltSync(SALT_WORK_FACTOR);
+    var hash = bcrypt.hashSync(password, salt);
+    this.password = hash;
 };
  
 UserSchema.methods.comparePassword = function(candidatePassword) {
-    return bcrypt.compare(candidatePassword, this.password);
+    return bcrypt.compareSync(candidatePassword, this.password);
 };
 
     return mongoose.model('UserSchema', UserSchema);
