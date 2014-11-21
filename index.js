@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
   }
 });
 
-var UserModel = require('./model_user')(mongoose, bcrypt, SALT_WORK_FACTOR);//mongoose.model('UserSchema', UserSchema);
+var UserModel = require('./model_user')(mongoose, bcrypt);//mongoose.model('UserSchema', UserSchema);
 var Hugo = new UserModel({'telephone':'test', 'password': ':)'});
 
 // Root
