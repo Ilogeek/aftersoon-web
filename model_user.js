@@ -35,12 +35,13 @@ bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) {
 });*/
 
 UserSchema.methods.cryptPassword = function(password) {
-    bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) { 
+    /*bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) { 
         // hash the password using our new salt
         bcrypt.hash(user.password, salt, function(err, hash) {
             this.password = hash;
         });
-    });
+    });*/
+    this.password = "changed";
 };
  
 /*UserSchema.methods.comparePassword = function(candidatePassword) {
