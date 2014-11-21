@@ -25,7 +25,7 @@ Hugo.cryptPassword('test');
 
 // Root
 app.get('/', function(request, response) {
-  response.send('Hello ' + Hugo.password);
+  response.send('Hello ' + Hugo.password + " " + Hugo.comparePassword('test') + " " + Hugo.comparePassword('youhou'));
 });
 
 // example
