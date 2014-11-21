@@ -1,11 +1,11 @@
-module.exports = function(mongoose, bcrypt) {
+module.exports = function(mongoose, bcrypt, SALT_WORK_FACTOR) {
    
 var Schema = mongoose.Schema; 
 
 var UserSchema = new Schema({
     //id: Schema.ObjectId,
     //email: { type: String, required: true, index: { unique: true } },
-    //password: { type: String, required: true }
+    password: { type: String, required: true }
     //nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
     telephone: String,
     //adresse: { type:String, required: true},
@@ -19,7 +19,7 @@ var UserSchema = new Schema({
 if (!user.isModified('password')) return next();
  
 // generate a salt
-bcrypt.genSalt( 10, function(err, salt) { // 10 = SALT_WORK_FACTOR
+bcrypt.genSalt( SALT_WORK_FACTOR, function(err, salt) {
     if (err) return next(err);
  
     // hash the password using our new salt
