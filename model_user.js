@@ -3,7 +3,6 @@ module.exports = function(mongoose, bcrypt, SALT_WORK_FACTOR) {
 var Schema = mongoose.Schema; 
 
 var UserSchema = new Schema({
-    id: Schema.ObjectId,
     //email: { type: String, required: true, index: { unique: true } },
     password: { type: String, required: true },
     //nom_usuel: { type : String, match: /^[a-zA-Z0-9-_]+$/ , required : true},
@@ -12,7 +11,7 @@ var UserSchema = new Schema({
     gps: String
 });
  
-/*UserSchema.pre(save, function(next) {
+UserSchema.pre(save, function(next) {
     var user = this;
  
 // only hash the password if it has been modified (or is new)
@@ -40,7 +39,7 @@ UserSchema.methods.comparePassword = function(candidatePassword, cb) {
         if (err) return cb(err);
         cb(null, isMatch);
     });
-};*/
+};
 
     return mongoose.model('UserSchema', UserSchema);
 
