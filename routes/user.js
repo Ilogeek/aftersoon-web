@@ -105,12 +105,6 @@ module.exports = function(app) {
    */
   addUser = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
-        if (err) throw err;
-        
-        // login was failure
-        if (!myselfUser) {
-
             console.log('POST - /user');
             console.log(req.is('json'));
             console.log(req.body);
@@ -143,12 +137,6 @@ module.exports = function(app) {
             });
 
 
-
-      }
-      else {
-        return res.send({error: 'Already logged.'});
-      }
-    });
 
   };
 
