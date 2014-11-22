@@ -1,43 +1,61 @@
 var express = require('express');
-
 var http = require('http');
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
-var SALT_WORK_FACTOR = 10;
 
 var app = express();
-
 app.set('port', (process.env.PORT || 5000))
 app.use(express.static(__dirname + '/public'))
 
-// connection to mongolab
-mongoose.connect(process.env.MONGOLAB_URI, function (err, res) {
-  if (err) {
-  console.log ('ERROR connecting to: ' + process.env.MONGOLAB_URI + '. ' + err);
-  } else {
-  console.log ('Succeeded connected to: ' + process.env.MONGOLAB_URI);
-  }
-});
-
-var UserModel = require('./model_user')(mongoose, bcrypt, SALT_WORK_FACTOR);//mongoose.model('UserSchema', UserSchema);
-var Hugo = new UserModel({'password':'test','telephone':'test'});
-Hugo.cryptPassword('test');
-
-// Root
-app.get('/', function(request, response) {
-  response.send('Hello ' + Hugo.password + " " + Hugo.comparePassword('test') + " " + Hugo.comparePassword('youhou'));
-});
-
-// example
-app.get('/hugo', function(request, response) {
-	response.send('Page')
-});
-
-app.get('/users', function(request, response){
-  response.send('users');
-});
-
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
-}) 
+}) ;
+
+var connStr = process.env.MONGOLAB_URI || 'mongodb://heroku_app31738690:pqegvskn398qo6nb5olr5fdfar@ds053130.mongolab.com:53130/heroku_app31738690';
+mongoose.connect(connStr, function(err) {
+    if (err) throw err;
+    console.log('Successfully connected to MongoDB');
+});
+
+
+// User
+var User = require('./models/user'),
+    UserRoutes = require('./routes/user')(app);
+
+// Root
+ app.get('/', function(request, response) {
+   response.send('Aftersoon');
+ });
+
+
+ /*
+
+ // attempt to authenticate user
+ User.getAuthenticated('Hugo', 'Password123', function(err, user, reason) {
+     if (err) throw err;
+
+     // login was successful if we have a user
+     if (user) {
+         // handle login success
+         console.log('login success');
+         return;
+     }
+
+     // otherwise we can determine why we failed
+     var reasons = User.failedLogin;
+     switch (reason) {
+         case reasons.NOT_FOUND:
+         case reasons.PASSWORD_INCORRECT:
+             // note: these cases are usually treated the same - don't tell
+             // the user *why* the login failed, only that it did
+             break;
+         case reasons.MAX_ATTEMPTS:
+             // send email or otherwise notify user that account is
+             // temporarily locked
+             break;
+     }
+ });
+
+*/
+
+
 
