@@ -1,5 +1,72 @@
-###Partie "Web" pour le projet R&D
+#Partie "Web" pour le projet R&D
+
+##SOMMAIRE
+1. Models
+	+ Utilisateurs
+	+ Evenements
+2. Routes
+3. Essais avec Postman
+
+## Models
+### Utilisateurs
+#### Structure 
+```javascript
+var UserSchema = new Schema({
+    username: { type: String, required: true, index: { unique: true } },
+    email: { type: String, required: true, index: { unique: true } },
+    password: { type: String, required: true },
+    telephone: String,
+    adresse: { type:String, required: true},
+    gps: String,
+    loginAttempts: { type: Number, required: true, default: 0 },
+    lockUntil: { type: Number }
+});
+```
+#### Method
+- User.comparePassword(PasswordATester, callback)
+- User.incLoggingAttempts(callback)
+- getAuthenticated(username, password, callback)
+
+### Evenements
+#### Structure 
+```javascript
+var EventSchema = new Schema({
+    title: { type: String, required: true },
+    date: { type: Date, required: true, default: Date.now },
+    owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    guests: [String],
+    coming: [String],
+    refusedBy: [String],
+    place_name: { type: String, required: true },
+    place_gps: { type: String, required: true },
+    date_locked : { type: Date, required: true, default: Date.now }
+});
+```
+#### Method
+- Event.ownedBy(username)
+- Event.imInvited(username)
+- Event.iRefused(username)
+- Event.iWillgo(username)
+
+### Routes
+#### UTILISATEURS
+- `/users` avec la methode `POST` pour avoir la liste des utilisateurs
+- `/user/<USERNAME>` avec la methode `POST` pour avoir les infos de l'utilisateur ayant l'username `<USERNAME>`
+- `/user` avec la methode `POST` pour créer un nouvel utilisateur
+- `/user/<USERNAME>` avec la methode `DELETE` pour supprimer l'utilisateur ayant l'username `<USERNAME>`
+- `/user/<USERNAME>` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username `<USERNAME>`
+
+#### EVENEMENTS
+- `/events` avec la methode `POST` pour avoir la liste des evenements
+- `/event/<ID>` avec la methode `POST` pour avoir les infos de l'evenement ayant l'id `<ID>`
+- `/event` avec la methode `POST` pour créer un nouvel événement
+- `/event/<ID>` avec la methode `DELETE` pour supprimer l'événement ayant l'id `<ID>`
+- `/event/<ID>` avec la methode `PUT` pour mettre à jour l'événement ayant l'id `<ID>`
+
+
+### Essais avec Postman
 Aperçu disponible sur [http://aftersoon.herokuapp.com](http://aftersoon.heroku.com)
+
 Utiliser Postman pour faire des tests ([Postman sur le store](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm))
 
 ####Configurer Postman :
@@ -28,7 +95,7 @@ Les données sont traitées en JSON côté serveur
 
 Les données à transférer pour chacune des urls se fait via l'onglet `raw` (dernier de la liste des choix). Il faut ensuite choisir dans le menu déroulant `JSON`
 
-> Pour chaque requête autre que l'ajout d'un utilisateur, pour des raisons de sécurité, il faut passer en plus en parametre `myUsername` et `myPassword`
+> **Pour chaque requête autre que l'ajout d'un utilisateur, pour des raisons de sécurité, il faut passer en plus en parametre `myUsername` et `myPassword`** (à voir à l'avenir pour améliorer la méthode avec un système de session par exemple)
 
 ####Exemple pour l'affichage d'un utilisateur :
 - URL : http://aftersoon.herokuapp.com/user/Hugo

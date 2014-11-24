@@ -13,5 +13,52 @@ var EventSchema = new Schema({
     date_locked : { type: Date, required: true, default: Date.now }
 });
 
+EventSchema.methods.ownedBy = function(username) {
+    return this.find({owner:req.username}, function(err, events) {
+      if(!err) {
+        return res.send(events);
+      } else {
+        res.statusCode = 500;
+        console.log('Internal error(%d): %s',res.statusCode,err.message);
+        return res.send({ error: 'Server error' });
+      }
+    });
+};
+
+EventSchema.methods.imInvited = function(username) {
+    return this.find({guests:username}, function(err, events) {
+      if(!err) {
+        return res.send(events);
+      } else {
+        res.statusCode = 500;
+        console.log('Internal error(%d): %s',res.statusCode,err.message);
+        return res.send({ error: 'Server error' });
+      }
+    });
+};
+
+EventSchema.methods.iRefused = function(username) {
+    return this.find({refusedBy:username}, function(err, events) {
+      if(!err) {
+        return res.send(events);
+      } else {
+        res.statusCode = 500;
+        console.log('Internal error(%d): %s',res.statusCode,err.message);
+        return res.send({ error: 'Server error' });
+      }
+    });
+};
+
+EventSchema.methods.iWillGo = function(username) {
+    return this.find({coming:username}, function(err, events) {
+      if(!err) {
+        return res.send(events);
+      } else {
+        res.statusCode = 500;
+        console.log('Internal error(%d): %s',res.statusCode,err.message);
+        return res.send({ error: 'Server error' });
+      }
+    });
+};
 
 module.exports = mongoose.model('Event', EventSchema);
