@@ -18,8 +18,6 @@ module.exports = function(app) {
 
   var User = require('../models/user');
 
-  var Event = require('../models/event');
-
   /**
    * Find and retrieves all users
    * @param {Object} req HTTP request object.

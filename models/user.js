@@ -121,4 +121,6 @@ UserSchema.static('getAuthenticated', function(username, password, cb) {
     });
 });
 
+var Event = require('../models/event');
+
 module.exports = mongoose.model('User', UserSchema);

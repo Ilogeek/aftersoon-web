@@ -61,4 +61,8 @@ EventSchema.methods.iWillGo = function(username) {
     });
 };
 
+EventSchema.methods.accept = function(){
+    
+}
+
 module.exports = mongoose.model('Event', EventSchema);

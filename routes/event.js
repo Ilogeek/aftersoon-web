@@ -259,6 +259,83 @@ module.exports = function(app) {
         });
   }
 
+  /**
+   * Change staut for a specific Event
+   * @param {Object} req HTTP request object.
+   * @param {Object} res HTTP response object.
+   */
+  changeStatus = function(req, res) {
+
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+        if (err) throw err;
+        
+        // login was successful if we have a user
+        if (myselfUser) {
+
+            console.log("POST - /event/:id/userStatus");
+            return Event.findById(req.params.id, function(err, event) {
+             
+              if(!event) {
+                res.statusCode = 404;
+                return res.send({ error: 'Not found' });
+              }
+
+              if(event.date_locked > Date.now)
+              {
+                var isInvited = (event.guests.indexOf(req.body.myUsername) != -1);
+                var hasAccepted = (event.coming.indexOf(req.body.myUsername) != -1);
+                var hasRefused = (event.refusedBy.indexOf(req.body.myUsername) != -1);
+
+                if( !isInvited && !hasAccepted && !hasRefused )
+                {
+                  res.statusCode = 403;
+                  return res.send({error: 'Not invited' });
+                }
+                if( isInvited )
+                {
+                  event.guests.splice(event.guests.indexOf(req.body.myUsername), 1);
+                  if(req.body.status == "accept")
+                  {
+                    event.coming.push(req.body.myUsername);
+                    return res.send({ status: 'Accepted' });
+                  }
+                  if(req.body.status == "refuse")
+                  {
+                    event.refusedBy.push(req.body.myUsername);
+                    return res.send({ status: 'Refused' });
+                  }
+                }
+                else if (hasAccepted && req.body.status == "refuse")
+                {
+                  event.coming.splice(event.coming.indexOf(req.body.myUsername), 1);
+                  event.refusedBy.push(req.body.myUsername);
+                  return res.send({ status: 'From Accepted to Refused' });
+                }
+                else if (hasRefused && req.body.status == "accept")
+                {
+                  event.refusedBy.splice(event.refusedBy.indexOf(req.body.myUsername), 1);
+                  event.coming.push(req.body.myUsername);
+                  return res.send({ status: 'From Refused to Accepted' });
+                }
+              }
+              else
+              {
+                res.statusCode = 403;
+                return res.send({error: 'Date is over' });
+              }
+              
+
+            });
+
+
+
+          }
+          else {
+            return res.send({error: 'Bad Authentication.'});
+          }
+        });
+  }
+
   //Link routes and actions
   app.post('/events', findAllEvents);
   // dont forget to change :username by :id if we switch in the fonction 
@@ -268,5 +345,8 @@ module.exports = function(app) {
   app.put('/event/:id', updateEvent);
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/event/:id', deleteEvent);
-
+  app.post('/event/:id/userStatus', changeStatus);
+  /* TODO app.get('/event/:id/invited', invitedUsers);
+  app.get('/event/:id/accepted',acceptedUsers);
+  app.get('/event/:id/refused', refusedUsers); */
 }
