@@ -1,5 +1,5 @@
 /**
- * User
+ * Event
  *
  * @module      :: Routes
  * @description :: Maps routes and actions
@@ -16,25 +16,26 @@ module.exports = function(app) {
   // parse application/json
   app.use(bodyParser.json())
 
-  var User = require('../models/user');
+  var Event = require('../models/event');
+  var User  = require('../models/user');
 
   /**
-   * Find and retrieves all users
+   * Find and retrieves all events
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  findAllUsers = function(req, res) {
-    console.log("POST - /users");
+  findAllEvents = function(req, res) {
+    console.log("POST - /events");
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
         if (myselfUser) {
 
-            // function findAllUsers
-            return User.find(function(err, users) {
+            // function findAllEvents
+            return Event.find(function(err, events) {
               if(!err) {
-                return res.send(users);
+                return res.send(events);
               } else {
                 res.statusCode = 500;
                 console.log('Internal error(%d): %s',res.statusCode,err.message);
@@ -52,7 +53,7 @@ module.exports = function(app) {
 
 
   /**
-   * Find and retrieves a single user by its ID
+   * Find and retrieves a single event by its ID
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
@@ -64,21 +65,16 @@ module.exports = function(app) {
         // login was successful if we have a user
         if (myselfUser) {
 
-          //Solution by Username which is unique so its like an ID
-          console.log("GET - /user/:username");
-          return User.findOne({username:req.params.username}, function(err,user) {
-          
-          // Solution by ID
-          //console.log("GET - /user/:id");
-          //return User.findById(req.params.id, function(err, user) {
+          console.log("POST - /event/:id");
+          return Event.findById(req.params.id, function(err, event) {
 
-            if(!user) {
+            if(!event) {
               res.statusCode = 404;
               return res.send({ error: 'Not found' });
             }
 
             if(!err) {
-              return res.send({ status: 'OK', user:user });
+              return res.send({ status: 'OK', event:event });
             } else {
 
               res.statusCode = 500;
@@ -99,44 +95,44 @@ module.exports = function(app) {
 
 
   /**
-   * Creates a new user from the data request
+   * Creates a new event from the data request
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  addUser = function(req, res) {
+  addEvent = function(req, res) {
 
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was failure
-        if (!myselfUser) {
+        if (myselfUser) {
 
-            console.log('POST - /user');
+            console.log('POST - /event');
             console.log(req.is('json'));
             console.log(req.body);
 
-            var user = new User({
-                email: req.body.email,
-                password: req.body.password,
-                username: req.body.username,
-                adresse: req.body.adresse
+            var event = new Event({
+                title: req.body.title,
+                date: req.body.date,
+                owner: req.body.owner,
+                guests: req.body.guests,
+                place_name: req.body.place_name,
+                place_gps: req.body.place_gps,
+                date_locked : req.body.date_locked
             });
 
-            if (req.body.gps != null) user.gps = req.body.gps;
-            if (req.body.telephone != null) user.telephone = req.body.telephone;
-
-            user.save(function(err) {
+            event.save(function(err) {
 
               if(err) {
 
-                console.log('Error while saving user : ' + err);
+                console.log('Error while saving event : ' + err);
                 res.send({ error:err });
                 return;
 
               } else {
 
-                console.log("User created");
-                return res.send({ status: 'OK', user:user });
+                console.log("Event created");
+                return res.send({ status: 'OK', event:event });
 
               }
 
@@ -146,7 +142,7 @@ module.exports = function(app) {
 
       }
       else {
-        return res.send({error: 'Already logged.'});
+        return res.send({error: 'Bad Authentication.'});
       }
     });
 
@@ -155,11 +151,11 @@ module.exports = function(app) {
 
 
   /**
-   * Update a user by its ID
+   * Update an event by its ID
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  updateUser = function(req, res) {
+  updateEvent = function(req, res) {
 
 
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
@@ -168,31 +164,33 @@ module.exports = function(app) {
         // login was successful if we have a user
         if (myselfUser) {
 
-              //Solution by Username which is unique so its like an ID
-              console.log("PUT - /user/:username");
-              return User.findOne({username:req.params.username}, function(err,user) {
-              
               // Solution by ID
-              //console.log("PUT - /user/:id");
-              //return User.findById(req.params.id, function(err, user) {
+              console.log("PUT - /event/:id");
+              return Event.findById(req.params.id, function(err, event) {
 
-                if(!user) {
+                if(!event) {
                   res.statusCode = 404;
                   return res.send({ error: 'Not found' });
                 }
 
                 // we dont want the user to update its username right ?
 
-                if (req.body.email != null) user.email = req.body.email;
-                if (req.body.adresse != null) user.adresse = req.body.adresse;
-                if (req.body.newPassword != null) user.password = req.body.newPassword;
-                if (req.body.gps != null) user.gps = req.body.gps;
-                if (req.body.telephone != null) user.telephone = req.body.telephone;
+                
+                if (req.body.title != null) event.title = req.body.title;
+                if (req.body.date != null) event.date = req.body.date;
+                if (req.body.owner != null) event.owner = req.body.owner;
+                if (req.body.guests != null) event.guests = req.body.guests;
+                if (req.body.coming != null) event.coming = req.body.coming;
+                if (req.body.refusedBy != null) event.refusedBy = req.body.refusedBy;
+                if (req.body.place_name != null) event.place_name = req.body.place_name;
+                if (req.body.place_gps != null) event.place_gps = req.body.place_gps;
+                if (req.body.date_locked != null) event.date_locked = req.body.date_locked;
+            
 
-                return user.save(function(err) {
+                return event.save(function(err) {
                   if(!err) {
                     console.log('Updated');
-                    return res.send({ status: 'OK', user:user });
+                    return res.send({ status: 'OK', event:event });
                   } else {
                     if(err.name == 'ValidationError') {
                       res.statusCode = 400;
@@ -204,7 +202,7 @@ module.exports = function(app) {
                     console.log('Internal error(%d): %s',res.statusCode,err.message);
                   }
 
-                  res.send(user);
+                  res.send(event);
 
                 });
               });
@@ -219,11 +217,11 @@ module.exports = function(app) {
 
 
   /**
-   * Delete a user by its ID
+   * Delete a event by its ID
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  deleteUser = function(req, res) {
+  deleteEvent = function(req, res) {
 
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
@@ -232,21 +230,17 @@ module.exports = function(app) {
         if (myselfUser && myselfUser.username == req.params.username) {
 
             //Solution by Username which is unique so its like an ID
-            console.log("DELETE - /user/:username");
-            return User.findOne({username:req.params.username}, function(err,user) {
-            
-            // Solution by ID
-            // console.log("DELETE - /user/:id");
-            //return User.findById(req.params.id, function(err, user) {
+            console.log("DELETE - /event/:id");
+            return Event.findById(req.params.id, function(err, event) {
               
-              if(!user) {
+              if(!event) {
                 res.statusCode = 404;
                 return res.send({ error: 'Not found' });
               }
 
-              return user.remove(function(err) {
+              return event.remove(function(err) {
                 if(!err) {
-                  console.log('Removed user');
+                  console.log('Removed event');
                   return res.send({ status: 'OK' });
                 } else {
                   res.statusCode = 500;
@@ -266,13 +260,13 @@ module.exports = function(app) {
   }
 
   //Link routes and actions
-  app.post('/users', findAllUsers);
+  app.post('/events', findAllEvents);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.post('/user/:username', findOne);
-  app.post('/user', addUser);
+  app.post('/event/:id', findOne);
+  app.post('/event', addEvent);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.put('/user/:username', updateUser);
+  app.put('/event/:id', updateEvent);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.delete('/user/:username', deleteUser);
+  app.delete('/event/:id', deleteEvent);
 
 }

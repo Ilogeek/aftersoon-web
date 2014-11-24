@@ -21,6 +21,10 @@ mongoose.connect(connStr, function(err) {
 var User = require('./models/user'),
     UserRoutes = require('./routes/user')(app);
 
+// Event
+var Event = require('./models/event'),
+    EventRoutes = require('./routes/event')(app);
+
 // Root
  app.get('/', function(request, response) {
    response.send('Aftersoon');
