@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var EventSchema = new Schema({
     title: { type: String, required: true },
     date: { type: Date, required: true, default: Date.now },
-    owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    owner: String, //{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     guests: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     coming: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     refusedBy: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
