@@ -21,6 +21,9 @@ mongoose.connect(connStr, function(err) {
 var User = require('./models/user'),
     UserRoutes = require('./routes/user')(app);
 
+// Friend
+var FriendRoutes = require('./routes/friend')(app);
+
 // Event
 var Event = require('./models/event'),
     EventRoutes = require('./routes/event')(app);

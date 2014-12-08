@@ -10,7 +10,8 @@ var EventSchema = new Schema({
     refusedBy: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     place_name: { type: String, required: true },
     place_gps: { type: String, required: true },
-    date_locked : { type: Date, required: true, default: Date.now }
+    date_locked : { type: Date, required: true, default: Date.now },
+    version : {type: Number, required: true, default: 1}
 });
 
 EventSchema.methods.ownedBy = function(username) {

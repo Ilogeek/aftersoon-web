@@ -19,7 +19,11 @@ var UserSchema = new Schema({
     adresse: { type:String, required: true},
     gps: String,
     loginAttempts: { type: Number, required: true, default: 0 },
-    lockUntil: { type: Number }
+    lockUntil: { type: Number },
+    friends : {type: [String], default: []}, // accepted friends
+    askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
+    requestFrom : {type: [String], default: []}, // people WHO asked to be friend with me
+    bannedBy : {type: [String], default: []} // people who refused to be friend with me
 });
 ```
 #### Method
@@ -39,7 +43,8 @@ var EventSchema = new Schema({
     refusedBy: [String],
     place_name: { type: String, required: true },
     place_gps: { type: String, required: true },
-    date_locked : { type: Date, required: true, default: Date.now }
+    date_locked : { type: Date, required: true, default: Date.now },
+    version: {type: Number, required:true, default: 1},
 });
 ```
 #### Method
@@ -54,7 +59,8 @@ var EventSchema = new Schema({
 - `/user/<USERNAME>` avec la methode `POST` pour avoir les infos de l'utilisateur ayant l'username `<USERNAME>`
 - `/user` avec la methode `POST` pour créer un nouvel utilisateur
 - `/user/<USERNAME>` avec la methode `DELETE` pour supprimer l'utilisateur ayant l'username `<USERNAME>`
-- `/user/<USERNAME>` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username `<USERNAME>`
+- `/user` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username passé en paramètre (myUsername)
+- `/user/nick/<USERNAME>` avec la methode `GET` pour regarder si l'username <USERNAME> est déjà pris (retourne 0 ou 1);
 
 #### EVENEMENTS
 - `/events` avec la methode `POST` pour avoir la liste des evenements
@@ -71,22 +77,6 @@ Utiliser Postman pour faire des tests ([Postman sur le store](https://chrome.goo
 
 ####Configurer Postman :
 Dans l'url : http://aftersoon.herokuapp.com puis :
-
-##### UTILISATEURS
-- `/users` avec la methode `POST` pour avoir la liste des utilisateurs
-- `/user/<USERNAME>` avec la methode `POST` pour avoir les infos de l'utilisateur ayant l'username `<USERNAME>`
-- `/user` avec la methode `POST` pour créer un nouvel utilisateur
-- `/user/<USERNAME>` avec la methode `DELETE` pour supprimer l'utilisateur ayant l'username `<USERNAME>`
-- `/user/<USERNAME>` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username `<USERNAME>`
-
-##### EVENEMENTS
-- `/events` avec la methode `POST` pour avoir la liste des evenements
-- `/event/<ID>` avec la methode `POST` pour avoir les infos de l'evenement ayant l'id `<ID>`
-- `/event` avec la methode `POST` pour créer un nouvel événement
-- `/event/<ID>` avec la methode `DELETE` pour supprimer l'événement ayant l'id `<ID>`
-- `/event/<ID>` avec la methode `PUT` pour mettre à jour l'événement ayant l'id `<ID>`
-
-___
 
 Pour l'encart `Headers` (bouton en haut à droite), ajouter :
 - `Header` : Content-Type

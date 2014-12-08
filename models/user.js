@@ -15,7 +15,11 @@ var UserSchema = new Schema({
     adresse: { type:String, required: true},
     gps: String,
     loginAttempts: { type: Number, required: true, default: 0 },
-    lockUntil: { type: Number }
+    lockUntil: { type: Number },
+    friends : {type: [String], default: []}, // accepted friends
+    askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
+    requestFrom : {type: [String], default: []}, // people WHO asked to be friend with me
+    bannedBy : {type: [String], default: []} // people who refused to be friend with me
 });
 
 UserSchema.virtual('isLocked').get(function() {
