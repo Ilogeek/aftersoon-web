@@ -5,6 +5,9 @@
 	+ Utilisateurs
 	+ Evenements
 2. Routes
+    + /user
+    + /event
+    + /friend
 3. Essais avec Postman
 
 ## Models
@@ -69,6 +72,11 @@ var EventSchema = new Schema({
 - `/event/<ID>` avec la methode `DELETE` pour supprimer l'événement ayant l'id `<ID>`
 - `/event/<ID>` avec la methode `PUT` pour mettre à jour l'événement ayant l'id `<ID>`
 
+#### AMIS
+- `/friend/add/<USERNAME>` avec la methode `POST` pour demander l'utilisateur `<USERNAME>` en ami
+- `/friend/accept/<USERNAME>` avec la methode `POST` pour accepter la demande de `<USERNAME>`
+- `/friend/refuse/<USERNAME>` avec la methode `POST` pour refuser la demande de `<USERNAME>`
+- `/friend/remove/<USERNAME>` avec la methode `POST` pour supprimer `<USERNAME>` de sa liste d'amis
 
 ### Essais avec Postman
 Aperçu disponible sur [http://aftersoon.herokuapp.com](http://aftersoon.heroku.com)

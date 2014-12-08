@@ -2,16 +2,17 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var EventSchema = new Schema({
-    title: { type: String, required: true },
-    date: { type: Date, required: true, default: Date.now },
-    owner: String, //{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-    guests: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-    coming: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-    refusedBy: [String], //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
-    place_name: { type: String, required: true },
-    place_gps: { type: String, required: true },
-    date_locked : { type: Date, required: true, default: Date.now },
-    version : {type: Number, required: true, default: 1}
+    title       : {type: String, required: true},
+    date        : {type: Date, required: true, default: Date.now},
+    owner       : {type: String}, //{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    guests      : {type: [String]}, //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    coming      : {type: [String]}, //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    refusedBy   : {type: [String]}, //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    place_name  : {type: String, required: true},
+    place_gps   : {type: String, required: true},
+    date_locked : {type: Date, required: true, default: Date.now},
+    version     : {type: Number, required: true, default: 1},
+    type        : {type: String, enum: ['Bar', 'Lunch', 'Meeting', 'Restaurant', 'Sport', 'Hangout', 'Walk', 'Other'], default: 'Other'}
 });
 
 EventSchema.methods.ownedBy = function(username) {

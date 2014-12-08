@@ -8,18 +8,18 @@ var mongoose = require('mongoose'),
     LOCK_TIME = 2 * 60 * 60 * 1000;
 
 var UserSchema = new Schema({
-    username: { type: String, required: true, index: { unique: true } },
-    email: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true },
-    telephone: String,
-    adresse: { type:String, required: true},
-    gps: String,
-    loginAttempts: { type: Number, required: true, default: 0 },
-    lockUntil: { type: Number },
-    friends : {type: [String], default: []}, // accepted friends
+    username        : {type: String, required: true, index: { unique: true }},
+    email           : {type: String, required: true, index: { unique: true }},
+    password        : {type: String, required: true},
+    telephone       : {type: String},
+    adresse         : {type: String, required: true},
+    gps             : {type: String},
+    loginAttempts   : {type: Number, required: true, default: 0},
+    lockUntil       : {type: Number},
+    friends         : {type: [String], default: []}, // accepted friends
     askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
-    requestFrom : {type: [String], default: []}, // people WHO asked to be friend with me
-    bannedBy : {type: [String], default: []} // people who refused to be friend with me
+    requestFrom     : {type: [String], default: []}, // people WHO asked to be friend with me
+    bannedBy        : {type: [String], default: []} // people who refused to be friend with me
 });
 
 UserSchema.virtual('isLocked').get(function() {

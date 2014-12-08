@@ -29,7 +29,7 @@ module.exports = function(app) {
   var User = require('../models/user');
 
   /**
-   * Find and retrieves all users
+   * Add a friend
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
@@ -76,6 +76,7 @@ module.exports = function(app) {
                         console.log('Updated');
                         res.statusCode = 200;
                         return res.send({ status: 200, user:myselfUser });
+                        // TODO : SEND PUSH TO THE OTHER USER 
                       } else {
                         if(err2.name == 'ValidationError') {
                           res.statusCode = 400;
