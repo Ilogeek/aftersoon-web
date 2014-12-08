@@ -35,17 +35,19 @@ module.exports = function(app) {
             // function findAllEvents
             return Event.find(function(err, events) {
               if(!err) {
-                return res.send(events);
+                res.statusCode = 200;
+                return res.send({status:200, events:events});
               } else {
                 res.statusCode = 500;
                 console.log('Internal error(%d): %s',res.statusCode,err.message);
-                return res.send({ error: 'Server error' });
+                return res.send({ status: 500 });
               }
             });
         
         }
         else {
-          return res.send({error: 'Bad Authentication.'});
+          res.statusCode = 403;
+          return res.send({status: 403, message: 'Bad Authentication.'});
         }
     });
   };
@@ -70,23 +72,25 @@ module.exports = function(app) {
 
             if(!event) {
               res.statusCode = 404;
-              return res.send({ error: 'Not found' });
+              return res.send({ status: 404 });
             }
 
             if(!err) {
-              return res.send({ status: 'OK', event:event });
+              res.statusCode = 200;
+              return res.send({ status: 200, event:event });
             } else {
 
               res.statusCode = 500;
               console.log('Internal error(%d): %s', res.statusCode, err.message);
-              return res.send({ error: 'Server error' });
+              return res.send({ status: 500 });
             }
           });
 
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            res.statusCode = 403;
+            return res.send({status: 403, message: 'Bad Authentication.'});
           }
         });
   };
@@ -126,13 +130,14 @@ module.exports = function(app) {
               if(err) {
 
                 console.log('Error while saving event : ' + err);
-                res.send({ error:err });
-                return;
+                res.statusCode = 500;
+                return res.send({ stauts : 500, error: err });
 
               } else {
 
                 console.log("Event created");
-                return res.send({ status: 'OK', event:event });
+                res.statusCode = 200;
+                return res.send({ status: 200, event:event });
 
               }
 
@@ -142,7 +147,8 @@ module.exports = function(app) {
 
       }
       else {
-        return res.send({error: 'Bad Authentication.'});
+        res.statusCode = 403;
+        return res.send({status: 403, message: 'Bad Authentication.'});
       }
     });
 
@@ -170,7 +176,7 @@ module.exports = function(app) {
 
                 if(!event) {
                   res.statusCode = 404;
-                  return res.send({ error: 'Not found' });
+                  return res.send({ status: 404 });
                 }
 
                 // we dont want the user to update its username right ?
@@ -190,26 +196,28 @@ module.exports = function(app) {
                 return event.save(function(err) {
                   if(!err) {
                     console.log('Updated');
-                    return res.send({ status: 'OK', event:event });
+                    res.statusCode = 200;
+                    return res.send({ status: 200, event:event });
                   } else {
                     if(err.name == 'ValidationError') {
                       res.statusCode = 400;
-                      res.send({ error: 'Validation error' });
+                      res.send({ status: 400 });
                     } else {
                       res.statusCode = 500;
-                      res.send({ error: 'Server error' });
+                      res.send({ status: 500 });
                     }
                     console.log('Internal error(%d): %s',res.statusCode,err.message);
                   }
-
-                  res.send(event);
+                  //res.statusCode = 200
+                  //res.send(event);
 
                 });
               });
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            res.statusCode = 403
+            return res.send({status: 403, message: 'Bad Authentication.'});
           }
         });
   };
@@ -235,17 +243,18 @@ module.exports = function(app) {
               
               if(!event) {
                 res.statusCode = 404;
-                return res.send({ error: 'Not found' });
+                return res.send({ status: 404 });
               }
 
               return event.remove(function(err) {
                 if(!err) {
                   console.log('Removed event');
-                  return res.send({ status: 'OK' });
+                  res.statusCode = 200;
+                  return res.send({ status: 200 });
                 } else {
                   res.statusCode = 500;
                   console.log('Internal error(%d): %s',res.statusCode,err.message);
-                  return res.send({ error: 'Server error' });
+                  return res.send({ status: 500 });
                 }
               })
             });
@@ -254,7 +263,7 @@ module.exports = function(app) {
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            return res.send({status: 403, message: 'Bad Authentication.'});
           }
         });
   }
@@ -277,7 +286,7 @@ module.exports = function(app) {
              
               if(!event) {
                 res.statusCode = 404;
-                return res.send({ error: 'Not found' });
+                return res.send({ status: 404 });
               }
 
               if(event.date_locked > Date.now)
@@ -289,7 +298,7 @@ module.exports = function(app) {
                 if( !isInvited && !hasAccepted && !hasRefused )
                 {
                   res.statusCode = 403;
-                  return res.send({error: 'Not invited' });
+                  return res.send({status: 403, message: 'Not invited' });
                 }
                 if( isInvited )
                 {
@@ -297,31 +306,35 @@ module.exports = function(app) {
                   if(req.body.status == "accept")
                   {
                     event.coming.push(req.body.myUsername);
-                    return res.send({ status: 'Accepted' });
+                    res.statusCode = 200;
+                    return res.send({ status: 200, message:'accepted' });
                   }
                   if(req.body.status == "refuse")
                   {
                     event.refusedBy.push(req.body.myUsername);
-                    return res.send({ status: 'Refused' });
+                    res.statusCode = 200;
+                    return res.send({ status: 200, message:'refused' });
                   }
                 }
                 else if (hasAccepted && req.body.status == "refuse")
                 {
                   event.coming.splice(event.coming.indexOf(req.body.myUsername), 1);
                   event.refusedBy.push(req.body.myUsername);
-                  return res.send({ status: 'From Accepted to Refused' });
+                  res.statusCode = 200;
+                  return res.send({ status: 200, message: 'From Accepted to Refused' });
                 }
                 else if (hasRefused && req.body.status == "accept")
                 {
                   event.refusedBy.splice(event.refusedBy.indexOf(req.body.myUsername), 1);
                   event.coming.push(req.body.myUsername);
-                  return res.send({ status: 'From Refused to Accepted' });
+                  res.statusCode = 200;
+                  return res.send({ status: 200, message: 'From Refused to Accepted' });
                 }
               }
               else
               {
                 res.statusCode = 403;
-                return res.send({error: 'Date is over' });
+                return res.send({status:403, message: 'Date is over' });
               }
               
 
@@ -331,7 +344,8 @@ module.exports = function(app) {
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            res.statusCode = 403;
+            return res.send({status:403, message: 'Bad Authentication.'});
           }
         });
   }

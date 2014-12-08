@@ -34,17 +34,19 @@ module.exports = function(app) {
             // function findAllUsers
             return User.find(function(err, users) {
               if(!err) {
-                return res.send(users);
+                res.statusCode = 200;
+                return res.send({status: 200, users:users});
               } else {
                 res.statusCode = 500;
                 console.log('Internal error(%d): %s',res.statusCode,err.message);
-                return res.send({ error: 'Server error' });
+                return res.send({ status: 500 });
               }
             });
         
         }
         else {
-          return res.send({error: 'Bad Authentication.'});
+          res.statusCode = 403;
+          return res.send({status:403, message: 'Bad Authentication.'});
         }
     });
   };
@@ -65,7 +67,7 @@ module.exports = function(app) {
         if (myselfUser) {
 
           //Solution by Username which is unique so its like an ID
-          console.log("GET - /user/:username");
+          console.log("POST - /user/:username");
           return User.findOne({username:req.params.username}, function(err,user) {
           
           // Solution by ID
@@ -74,23 +76,25 @@ module.exports = function(app) {
 
             if(!user) {
               res.statusCode = 404;
-              return res.send({ error: 'Not found' });
+              return res.send({ status: 404 });
             }
 
             if(!err) {
-              return res.send({ status: 'OK', user:user });
+              res.statusCode = 200;
+              return res.send({ status: 200, user:user });
             } else {
 
               res.statusCode = 500;
               console.log('Internal error(%d): %s', res.statusCode, err.message);
-              return res.send({ error: 'Server error' });
+              return res.send({ status: 500 });
             }
           });
 
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            res.statusCode = 403;
+            return res.send({status:403, message : 'Bad Authentication.'});
           }
         });
   };
@@ -128,15 +132,15 @@ module.exports = function(app) {
             user.save(function(err) {
 
               if(err) {
-
+                res.statusCode = 400;
                 console.log('Error while saving user : ' + err);
-                res.send({ error:err });
+                res.send({status:400, message:err });
                 return;
 
               } else {
-
+                res.statusCode = 200;
                 console.log("User created");
-                return res.send({ status: 'OK', user:user });
+                return res.send({ status: 200, user:user });
 
               }
 
@@ -146,7 +150,8 @@ module.exports = function(app) {
 
       }
       else {
-        return res.send({error: 'Already logged.'});
+        res.statusCode = 403;
+        return res.send({status:403, message: 'Already logged.'});
       }
     });
 
@@ -169,8 +174,8 @@ module.exports = function(app) {
         if (myselfUser) {
 
               //Solution by Username which is unique so its like an ID
-              console.log("PUT - /user/:username");
-              return User.findOne({username:req.params.username}, function(err,user) {
+              console.log("PUT - /user");
+              return User.findOne({username:req.body.myUsername}, function(err,user) {
               
               // Solution by ID
               //console.log("PUT - /user/:id");
@@ -178,7 +183,7 @@ module.exports = function(app) {
 
                 if(!user) {
                   res.statusCode = 404;
-                  return res.send({ error: 'Not found' });
+                  return res.send({ status: 404 });
                 }
 
                 // we dont want the user to update its username right ?
@@ -190,28 +195,31 @@ module.exports = function(app) {
                 if (req.body.telephone != null) user.telephone = req.body.telephone;
 
                 return user.save(function(err) {
+                  console.log(err);
                   if(!err) {
                     console.log('Updated');
-                    return res.send({ status: 'OK', user:user });
+                    res.statusCode = 200;
+                    return res.send({ status: 200, user:user });
                   } else {
                     if(err.name == 'ValidationError') {
                       res.statusCode = 400;
-                      res.send({ error: 'Validation error' });
+                      res.send({ status:400, message: 'Validation error' });
                     } else {
                       res.statusCode = 500;
-                      res.send({ error: 'Server error' });
+                      res.send({ status: 500 });
                     }
                     console.log('Internal error(%d): %s',res.statusCode,err.message);
                   }
 
-                  res.send(user);
+                  //res.send(user);
 
                 });
               });
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            res.statusCode = 403;
+            return res.send({status:403, message: 'Bad Authentication.'});
           }
         });
   };
@@ -241,17 +249,18 @@ module.exports = function(app) {
               
               if(!user) {
                 res.statusCode = 404;
-                return res.send({ error: 'Not found' });
+                return res.send({ status:404 });
               }
 
               return user.remove(function(err) {
                 if(!err) {
                   console.log('Removed user');
-                  return res.send({ status: 'OK' });
+                  res.statusCode = 200;
+                  return res.send({ status: 200 });
                 } else {
                   res.statusCode = 500;
                   console.log('Internal error(%d): %s',res.statusCode,err.message);
-                  return res.send({ error: 'Server error' });
+                  return res.send({ status: 500 });
                 }
               })
             });
@@ -260,7 +269,8 @@ module.exports = function(app) {
 
           }
           else {
-            return res.send({error: 'Bad Authentication.'});
+            res.statusCode = 403;
+            return res.send({status:403, message: 'Bad Authentication.'});
           }
         });
   }
@@ -271,7 +281,7 @@ module.exports = function(app) {
   app.post('/user/:username', findOne);
   app.post('/user', addUser);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.put('/user/:username', updateUser);
+  app.put('/user', updateUser);
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/user/:username', deleteUser);
 
