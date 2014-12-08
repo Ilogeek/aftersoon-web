@@ -275,6 +275,26 @@ module.exports = function(app) {
         });
   }
 
+  function isNicknameTaken(req, res){
+      return User.findOne({username:req.params.username}, function(err,user) {
+      
+        if(!user) {
+          res.statusCode = 200;
+          return res.send({ status: 200, exist: 0 });
+        }
+
+        if(!err) {
+          res.statusCode = 200;
+          return res.send({ status: 200, exist: 1 });
+        } else {
+
+          res.statusCode = 500;
+          console.log('Internal error(%d): %s', res.statusCode, err.message);
+          return res.send({ status: 500, exist: -1 });
+        }
+      });
+  }
+
   //Link routes and actions
   app.post('/users', findAllUsers);
   // dont forget to change :username by :id if we switch in the fonction 
@@ -284,5 +304,6 @@ module.exports = function(app) {
   app.put('/user', updateUser);
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/user/:username', deleteUser);
+  app.get('/user/nick/:username', isNicknameTaken);
 
 }
