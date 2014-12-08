@@ -15,18 +15,18 @@
 #### Structure 
 ```javascript
 var UserSchema = new Schema({
-    username: { type: String, required: true, index: { unique: true } },
-    email: { type: String, required: true, index: { unique: true } },
-    password: { type: String, required: true },
-    telephone: String,
-    adresse: { type:String, required: true},
-    gps: String,
-    loginAttempts: { type: Number, required: true, default: 0 },
-    lockUntil: { type: Number },
-    friends : {type: [String], default: []}, // accepted friends
+    username        : {type: String, required: true, index: { unique: true }},
+    email           : {type: String, required: true, index: { unique: true }},
+    password        : {type: String, required: true},
+    telephone       : {type: String},
+    adresse         : {type: String, required: true},
+    gps             : {type: String},
+    loginAttempts   : {type: Number, required: true, default: 0},
+    lockUntil       : {type: Number},
+    friends         : {type: [String], default: []}, // accepted friends
     askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
-    requestFrom : {type: [String], default: []}, // people WHO asked to be friend with me
-    bannedBy : {type: [String], default: []} // people who refused to be friend with me
+    requestFrom     : {type: [String], default: []}, // people WHO asked to be friend with me
+    bannedBy        : {type: [String], default: []} // people who refused to be friend with me
 });
 ```
 #### Method
@@ -38,16 +38,17 @@ var UserSchema = new Schema({
 #### Structure 
 ```javascript
 var EventSchema = new Schema({
-    title: { type: String, required: true },
-    date: { type: Date, required: true, default: Date.now },
-    owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-    guests: [String],
-    coming: [String],
-    refusedBy: [String],
-    place_name: { type: String, required: true },
-    place_gps: { type: String, required: true },
-    date_locked : { type: Date, required: true, default: Date.now },
-    version: {type: Number, required:true, default: 1},
+    title       : {type: String, required: true},
+    date        : {type: Date, required: true, default: Date.now},
+    owner       : {type: String}, //{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    guests      : {type: [String]}, //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    coming      : {type: [String]}, //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    refusedBy   : {type: [String]}, //<-- USERNAME LIST  -- [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
+    place_name  : {type: String, required: true},
+    place_gps   : {type: String, required: true},
+    date_locked : {type: Date, required: true, default: Date.now},
+    version     : {type: Number, required: true, default: 1},
+    type        : {type: String, enum: ['Bar', 'Lunch', 'Meeting', 'Restaurant', 'Sport', 'Hangout', 'Walk', 'Other'], default: 'Other'}
 });
 ```
 #### Method
