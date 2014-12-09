@@ -118,11 +118,13 @@ module.exports = function(app) {
             var event = new Event({
                 title: req.body.title,
                 date: req.body.date,
-                owner: req.body.owner,
+                owner: req.body.myUsername,
                 guests: req.body.guests,
                 place_name: req.body.place_name,
                 place_gps: req.body.place_gps,
-                date_locked : req.body.date_locked
+                date_locked : req.body.date_locked,
+                type : req.body.type,
+                version : 1
             });
 
             event.save(function(err) {
