@@ -239,7 +239,7 @@ module.exports = function(app) {
         if (err) throw err;
         
         // login was successful if we have a user
-        if (myselfUser && myselfUser.username == req.params.username) {
+        if (myselfUser) {
 
             //Solution by Username which is unique so its like an ID
             console.log("DELETE - /event/:id");
@@ -247,20 +247,27 @@ module.exports = function(app) {
               
               if(!event) {
                 res.statusCode = 404;
-                return res.send({ status: 404 });
+                return res.send({ status: 404 , message: "Event doesn't exist"});
               }
-
-              return event.remove(function(err) {
-                if(!err) {
-                  console.log('Removed event');
-                  res.statusCode = 200;
-                  return res.send({ status: 200 });
-                } else {
-                  res.statusCode = 500;
-                  console.log('Internal error(%d): %s',res.statusCode,err.message);
-                  return res.send({ status: 500 });
-                }
-              })
+              if(myselfUser.username == event.owner){
+                return event.remove(function(err) {
+                  if(!err) {
+                    console.log('Removed event');
+                    res.statusCode = 200;
+                    return res.send({ status: 200 });
+                  } else {
+                    res.statusCode = 500;
+                    console.log('Internal error(%d): %s',res.statusCode,err.message);
+                    return res.send({ status: 500 });
+                  }
+                })
+              }
+              else
+              {
+                res.statusCode = 403;
+                return res.send({status: 403, message: 'You are not the owner.'});
+              }
+              
             });
 
 
