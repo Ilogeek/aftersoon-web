@@ -193,6 +193,8 @@ module.exports = function(app) {
                 if (req.body.place_name != null) event.place_name = req.body.place_name;
                 if (req.body.place_gps != null) event.place_gps = req.body.place_gps;
                 if (req.body.date_locked != null) event.date_locked = req.body.date_locked;
+                if (req.body.type != null) event.type = req.body.type;
+                event.version = event.version + 1;
             
 
                 return event.save(function(err) {
@@ -342,7 +344,7 @@ module.exports = function(app) {
 
             });
 
-
+          // EVENT SAVE NEEDED AND EVENT.VERSION +1
 
           }
           else {

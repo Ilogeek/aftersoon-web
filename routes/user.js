@@ -237,22 +237,12 @@ module.exports = function(app) {
         if (err) throw err;
         
         // login was successful if we have a user
-        if (myselfUser && myselfUser.username == req.params.username) {
+        if (myselfUser) {
 
             //Solution by Username which is unique so its like an ID
             console.log("DELETE - /user/:username");
-            return User.findOne({username:req.params.username}, function(err,user) {
             
-            // Solution by ID
-            // console.log("DELETE - /user/:id");
-            //return User.findById(req.params.id, function(err, user) {
-              
-              if(!user) {
-                res.statusCode = 404;
-                return res.send({ status:404 });
-              }
-
-              return user.remove(function(err) {
+              return myselfUser.remove(function(err) {
                 if(!err) {
                   console.log('Removed user');
                   res.statusCode = 200;
@@ -262,8 +252,7 @@ module.exports = function(app) {
                   console.log('Internal error(%d): %s',res.statusCode,err.message);
                   return res.send({ status: 500 });
                 }
-              })
-            });
+              });
 
 
 
@@ -303,7 +292,7 @@ module.exports = function(app) {
   // dont forget to change :username by :id if we switch in the fonction 
   app.put('/user', updateUser);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.delete('/user/:username', deleteUser);
+  app.delete('/user', deleteUser);
   app.get('/user/nick/:username', isNicknameTaken);
 
 }
