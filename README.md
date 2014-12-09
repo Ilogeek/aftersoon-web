@@ -108,4 +108,4 @@ Les données à transférer pour chacune des urls se fait via l'onglet `raw` (de
 }
 ```
 
-> ~~Différents exemples pré-écrits : [https://www.getpostman.com/collections/43ee17c2a77880dccb3e](https://www.getpostman.com/collections/43ee17c2a77880dccb3e) à importer dans Postman~~ **A refaire**
+> Différents exemples pré-écrits : [POSTMAN - Aftersoon.json](POSTMAN&20-&20Aftersoon.json) à la racine du projet, à importer dans Postman 
