@@ -3,6 +3,7 @@ var http = require('http');
 var mongoose = require('mongoose');
 
 var app = express();
+app.set('view engine', 'ejs')
 app.set('port', (process.env.PORT || 5000))
 app.use(express.static(__dirname + '/public'))
 
@@ -28,9 +29,13 @@ var FriendRoutes = require('./routes/friend')(app);
 var Event = require('./models/event'),
     EventRoutes = require('./routes/event')(app);
 
+// Map
+//var Map = require('./map.js');
+
 // Root
  app.get('/', function(request, response) {
-   response.send('Aftersoon');
+   //response.send('Aftersoon');
+   response.render('index');
  });
 
 

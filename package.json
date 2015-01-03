@@ -11,7 +11,9 @@
     "mongoose": "*",
     "pubnub": "*",
     "bcrypt": "*",
-    "body-parser": "*"
+    "body-parser": "*",
+    "google-maps": "*",
+    "ejs": "*"
   },
   "engines": {
     "node": "0.10.x"
