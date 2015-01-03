@@ -75,9 +75,12 @@ function createMarker(latlng, label, html) {
   }
   
   function calcRoute() {
-
-    var start = firstAddress;
-    var end = secondAddress;
+    console.log(firstAddress);
+    var CoordFirstAddress = firstAddress.split(",%20");
+    var CoordSecondAddress = secondAddress.split(",%20");
+    
+    var start = new google.maps.LatLng(parseFloat(CoordFirstAddress[0]),parseFloat(CoordFirstAddress[1]));
+    var end = new google.maps.LatLng(parseFloat(CoordSecondAddress[0]),parseFloat(CoordSecondAddress[1]));
     if (travelModeParam == "DRIVING") {
         var travelMode = google.maps.DirectionsTravelMode.DRIVING;
     }
