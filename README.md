@@ -8,7 +8,8 @@
     + /user
     + /event
     + /friend
-3. Essais avec Postman
+3. Ebauche pour le calcul des trajets
+4. Essais avec Postman
 
 ## Models
 ### Utilisateurs
@@ -57,8 +58,8 @@ var EventSchema = new Schema({
 - Event.iRefused(username)
 - Event.iWillgo(username)
 
-### Routes
-#### UTILISATEURS
+## Routes
+### UTILISATEURS
 - `/users` avec la methode `POST` pour avoir la liste des utilisateurs
 - `/user/<USERNAME>` avec la methode `POST` pour avoir les infos de l'utilisateur ayant l'username `<USERNAME>`
 - `/user` avec la methode `POST` pour créer un nouvel utilisateur
@@ -66,20 +67,42 @@ var EventSchema = new Schema({
 - `/user` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username passé en paramètre (myUsername)
 - `/user/nick/<USERNAME>` avec la methode `GET` pour regarder si l'username <USERNAME> est déjà pris (retourne 0 ou 1);
 
-#### EVENEMENTS
+### EVENEMENTS
 - `/events` avec la methode `POST` pour avoir la liste des evenements
 - `/event/<ID>` avec la methode `POST` pour avoir les infos de l'evenement ayant l'id `<ID>`
 - `/event` avec la methode `POST` pour créer un nouvel événement
 - `/event/<ID>` avec la methode `DELETE` pour supprimer l'événement ayant l'id `<ID>`
 - `/event/<ID>` avec la methode `PUT` pour mettre à jour l'événement ayant l'id `<ID>`
 
-#### AMIS
+### AMIS
 - `/friend/add/<USERNAME>` avec la methode `POST` pour demander l'utilisateur `<USERNAME>` en ami
 - `/friend/accept/<USERNAME>` avec la methode `POST` pour accepter la demande de `<USERNAME>`
 - `/friend/refuse/<USERNAME>` avec la methode `POST` pour refuser la demande de `<USERNAME>`
 - `/friend/remove/<USERNAME>` avec la methode `POST` pour supprimer `<USERNAME>` de sa liste d'amis
 
-### Essais avec Postman
+## Ebauche pour le calcul des trajets
+Nous utiliserons l'API google Map afin de nous aider pour le calcul des trajets et découvrir les lieux à proximité.
+
+Puisque l'API ne peut s'exécuter que côté client, la page [/map](http://aftersoon.heroku.com/map) a été créée. Elle servira à récupérer les données qui seront ensuite traitées par le serveur et envoyées au client mobile.
+
+Actuellement il est possible de calculer :
+- Le trajet le plus court à pied, en voiture, en transport en commun
+- Trouver le "mi chemin"
+- Trouver dans un rayon donné un type d'établissement donné
+
+Tous les paramètres se passent directement dans l'URL (méthode GET). L'adresse ressemble à :
+`/map?firstAddress=LAT_1, LONG_1&secondAddress=LAT_2, LONG_2&travelModeParam=TYPE_OF_TRAVEL&typeOfPlaces=TYPE_OF_PLACE&radius=NUMBER`
+- Les coordonnées des adresses doivent être séparées par une virgule suivi d'un espace (ex : `48.581073, 7.749145` ce qui donne encodé : `48.581073,%207.749145`)
+- Le paramètre travelModeParam peut prendre les valeurs `DRIVING`, `WALKING`, `TRANSIT` ([documentation](https://developers.google.com/maps/documentation/directions/#TravelModes))
+- Le paramètre typeOfPlaces peut prendre les valeurs présentées à [cette adresse](https://developers.google.com/places/documentation/supported_types)
+- Le paramètre radius prendre un nombre comme valeur ([documentation](https://developers.google.com/places/documentation/search))
+
+> Exemple : [http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100](http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100)
+> **Actuellement la page affiche une carte pour être sur des résultats. L'objet est visible dans la console.**
+
+> **TODO : Affiner les recherches avec les paramètres optionnels du type "minprice", "maxprice", "opennow". L'option "rankby" basée sur la distance pourrait permettre de trouver l'établissement le plus proche si la première itération ne retourne aucun résultat ([documentation](https://developers.google.com/places/documentation/search))**
+
+## Essais avec Postman
 Aperçu disponible sur [http://aftersoon.herokuapp.com](http://aftersoon.heroku.com)
 
 Utiliser Postman pour faire des tests ([Postman sur le store](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm))

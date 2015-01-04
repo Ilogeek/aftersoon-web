@@ -34,8 +34,11 @@ var Event = require('./models/event'),
 
 // Root
  app.get('/', function(request, response) {
-   //response.send('Aftersoon');
-   response.render('index');
+   response.send('Aftersoon');
+ });
+
+ app.get('/map', function(req, res) {
+    res.render('map/index');
  });
 
 
