@@ -92,15 +92,22 @@ Actuellement il est possible de calculer :
 
 Tous les paramètres se passent directement dans l'URL (méthode GET). L'adresse ressemble à :
 `/map?firstAddress=LAT_1, LONG_1&secondAddress=LAT_2, LONG_2&travelModeParam=TYPE_OF_TRAVEL&typeOfPlaces=TYPE_OF_PLACE&radius=NUMBER`
+#### Paramètres obligatoires
 - Les coordonnées des adresses doivent être séparées par une virgule suivi d'un espace (ex : `48.581073, 7.749145` ce qui donne encodé : `48.581073,%207.749145`)
 - Le paramètre travelModeParam peut prendre les valeurs `DRIVING`, `WALKING`, `TRANSIT` ([documentation](https://developers.google.com/maps/documentation/directions/#TravelModes))
 - Le paramètre typeOfPlaces peut prendre les valeurs présentées à [cette adresse](https://developers.google.com/places/documentation/supported_types)
-- Le paramètre radius prendre un nombre comme valeur ([documentation](https://developers.google.com/places/documentation/search))
 
-> Exemple : [http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100](http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100)
+#### Paramètres optionnels
+- Le paramètre openNow prend la valeur `yes` ou `no` en fonction du choix souhaité ([documentation](https://developers.google.com/places/documentation/search)) **Par défaut : no**
+- Le paramètre radius prend un nombre (mètre) comme valeur ([documentation](https://developers.google.com/places/documentation/search)) **Par défaut : 200**
+- Le paramètre rankBy peut être ajouté avec la valeur `DISTANCE`. A ce moment, le radius n'est plus pris en compte mais une liste est créée en cherchant les établissements les plus proches (pourra être utilisé lorsque le lieu calculé est pauvre en établissement)
+
+> Exemple : 
+> - [http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100&openNow=yes](http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100&openNow=yes) **(sans rankBy)**
+> - [http://aftersoon.herokuapp.com/map?firstAddress=48.501073,%207.749145&secondAddress=48.483483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&rankBy=DISTANCE](http://aftersoon.herokuapp.com/map?firstAddress=48.501073,%207.749145&secondAddress=48.483483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&rankBy=DISTANCE) **(avec rankBy)**
 > **Actuellement la page affiche une carte pour être sur des résultats. L'objet est visible dans la console.**
 
-> **TODO : Affiner les recherches avec les paramètres optionnels du type "minprice", "maxprice", "opennow". L'option "rankby" basée sur la distance pourrait permettre de trouver l'établissement le plus proche si la première itération ne retourne aucun résultat ([documentation](https://developers.google.com/places/documentation/search))**
+> **TODO : Affiner les recherches avec les paramètres optionnels du type "minprice", "maxprice". ([documentation](https://developers.google.com/places/documentation/search))**
 
 ## Essais avec Postman
 Aperçu disponible sur [http://aftersoon.herokuapp.com](http://aftersoon.heroku.com)

@@ -35,6 +35,10 @@ var travelModeParam = gup('travelModeParam');
 var typeOfPlaces = gup('typeOfPlaces'); // https://developers.google.com/places/documentation/supported_types
 var radius = gup('radius');
 if (!radius) {radius = 200;}
+var openNow = gup('openNow');
+if(!openNow) {openNow = 'no';}
+var rankBy = gup('rankBy');
+if(!rankBy) {rankBy = 'PROMINENCE';} else { rankBy = 'DISTANCE';}
 
   var directionDisplay;
   var directionsService = new google.maps.DirectionsService();
@@ -176,9 +180,12 @@ var totalTime = 0;
         JSONresult.middleWay = polyline.GetPointAtDistance(distance);
         var request = {
             location: polyline.GetPointAtDistance(distance),
-            radius: radius,
-            types: [typeOfPlaces]
+            types: [typeOfPlaces],
+            openNow: openNow
           };
+        if (rankBy == 'DISTANCE') { request.rankBy = google.maps.places.RankBy.DISTANCE; }
+        else { request.radius = radius; }
+        
         var service = new google.maps.places.PlacesService(map);
         service.nearbySearch(request, callback);
 
