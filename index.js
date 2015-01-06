@@ -1,6 +1,9 @@
 var express = require('express');
 var http = require('http');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+
+
 
 var app = express();
 app.set('view engine', 'ejs')
@@ -16,7 +19,6 @@ mongoose.connect(connStr, function(err) {
     if (err) throw err;
     console.log('Successfully connected to MongoDB');
 });
-
 
 // User
 var User = require('./models/user'),
@@ -41,36 +43,14 @@ var Event = require('./models/event'),
     res.render('map/index');
  });
 
-
- /*
-
- // attempt to authenticate user
- User.getAuthenticated('Hugo', 'Password123', function(err, user, reason) {
-     if (err) throw err;
-
-     // login was successful if we have a user
-     if (user) {
-         // handle login success
-         console.log('login success');
-         return;
-     }
-
-     // otherwise we can determine why we failed
-     var reasons = User.failedLogin;
-     switch (reason) {
-         case reasons.NOT_FOUND:
-         case reasons.PASSWORD_INCORRECT:
-             // note: these cases are usually treated the same - don't tell
-             // the user *why* the login failed, only that it did
-             break;
-         case reasons.MAX_ATTEMPTS:
-             // send email or otherwise notify user that account is
-             // temporarily locked
-             break;
-     }
+ app.get('/map/json', function(req, res) {
+    //res.setHeader('content-type', 'application/json');
+    res.render('map/json');
  });
 
-*/
+
+
+ 
 
 
 

@@ -67,11 +67,11 @@ function createMarker(latlng, label, html) {
 
   function initialize() {
     directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
-    var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+    var scherwillerFTW = new google.maps.LatLng(48.292681,7.4149805);
     var myOptions = {
       zoom: 6,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
-      center: chicago
+      center: scherwillerFTW
     }
     map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
     polyline = new google.maps.Polyline({
@@ -220,7 +220,10 @@ var totalTime = 0;
               position: place.geometry.location
             });
 
-            //placesList.innerHTML += '<li>' + place.name + '</li>';
+            google.maps.event.addListener(marker, 'click', function() {
+                infowindow.setContent(contentString+"<br>"+marker.getPosition().toUrlValue(6)); 
+                infowindow.open(map,marker);
+                });
 
             bounds.extend(place.geometry.location);
           }

@@ -8,7 +8,7 @@
     + /user
     + /event
     + /friend
-3. Ebauche pour le calcul des trajets
+3. Calcul des trajets
 4. Essais avec Postman
 
 ## Models
@@ -80,10 +80,10 @@ var EventSchema = new Schema({
 - `/friend/refuse/<USERNAME>` avec la methode `POST` pour refuser la demande de `<USERNAME>`
 - `/friend/remove/<USERNAME>` avec la methode `POST` pour supprimer `<USERNAME>` de sa liste d'amis
 
-## Ebauche pour le calcul des trajets
+## Calcul des trajets
 Nous utiliserons l'API google Map afin de nous aider pour le calcul des trajets et découvrir les lieux à proximité.
 
-Puisque l'API ne peut s'exécuter que côté client, la page [/map](http://aftersoon.heroku.com/map) a été créée. Elle servira à récupérer les données qui seront ensuite traitées par le serveur et envoyées au client mobile.
+Puisque l'API ne peut s'exécuter que côté client, les pages [/map](http://aftersoon.heroku.com/map) (version illustrée) [/map/json](http://aftersoon.heroku.com/map/json) (version rendant le JSON) ont été créées. Elles serviront à récupérer les données qui seront ensuite traitées par le serveur et envoyées au client mobile.
 
 Actuellement il est possible de calculer :
 - Le trajet le plus court à pied, en voiture, en transport en commun
@@ -91,7 +91,7 @@ Actuellement il est possible de calculer :
 - Trouver dans un rayon donné un type d'établissement donné
 
 Tous les paramètres se passent directement dans l'URL (méthode GET). L'adresse ressemble à :
-`/map?firstAddress=LAT_1, LONG_1&secondAddress=LAT_2, LONG_2&travelModeParam=TYPE_OF_TRAVEL&typeOfPlaces=TYPE_OF_PLACE&radius=NUMBER`
+`/map?firstAddress=LAT_1, LONG_1&secondAddress=LAT_2, LONG_2&travelModeParam=TYPE_OF_TRAVEL&typeOfPlaces=TYPE_OF_PLACE[&radius=NUMBER&openNow=yes&rankBy=DISTANCE]`
 #### Paramètres obligatoires
 - Les coordonnées des adresses doivent être séparées par une virgule suivi d'un espace (ex : `48.581073, 7.749145` ce qui donne encodé : `48.581073,%207.749145`)
 - Le paramètre travelModeParam peut prendre les valeurs `DRIVING`, `WALKING`, `TRANSIT` ([documentation](https://developers.google.com/maps/documentation/directions/#TravelModes))
@@ -105,7 +105,8 @@ Tous les paramètres se passent directement dans l'URL (méthode GET). L'adresse
 > Exemple : 
 > - [http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100&openNow=yes](http://aftersoon.herokuapp.com/map?firstAddress=48.581073,%207.749145&secondAddress=48.583483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&radius=100&openNow=yes) **(sans rankBy)**
 > - [http://aftersoon.herokuapp.com/map?firstAddress=48.501073,%207.749145&secondAddress=48.483483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&rankBy=DISTANCE](http://aftersoon.herokuapp.com/map?firstAddress=48.501073,%207.749145&secondAddress=48.483483,%207.746404&travelModeParam=TRANSIT&typeOfPlaces=bar&rankBy=DISTANCE) **(avec rankBy)**
-> **Actuellement la page affiche une carte pour être sur des résultats. L'objet est visible dans la console.**
+
+> **Actuellement la page affiche une carte pour être sur des résultats. L'objet est visible dans la console. En utilisant la même URL mais en ajoutant `/json` après `/map` l'objet JSON apparait**
 
 > **TODO : Affiner les recherches avec les paramètres optionnels du type "minprice", "maxprice". ([documentation](https://developers.google.com/places/documentation/search))**
 
