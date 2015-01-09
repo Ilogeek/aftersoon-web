@@ -13,7 +13,8 @@
     "bcrypt": "*",
     "body-parser": "*",
     "google-maps": "*",
-    "ejs": "*"
+    "ejs": "*",
+    "polyline": "*"
   },
   "engines": {
     "node": "0.10.x"
