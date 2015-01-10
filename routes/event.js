@@ -59,7 +59,7 @@ module.exports = function(app) {
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  findOne = function(req, res) {
+  findOneEvent = function(req, res) {
 
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
@@ -364,7 +364,7 @@ module.exports = function(app) {
   //Link routes and actions
   app.post('/events', findAllEvents);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.post('/event/:id', findOne);
+  app.post('/event/:id', findOneEvent);
   app.post('/event', addEvent);
   // dont forget to change :username by :id if we switch in the fonction 
   app.put('/event/:id', updateEvent);

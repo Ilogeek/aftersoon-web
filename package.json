@@ -12,7 +12,6 @@
     "pubnub": "*",
     "bcrypt": "*",
     "body-parser": "*",
-    "google-maps": "*",
     "ejs": "*",
     "polyline": "*",
     "request": "*"

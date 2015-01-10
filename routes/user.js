@@ -58,7 +58,7 @@ module.exports = function(app) {
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  findOne = function(req, res) {
+  findOneUser = function(req, res) {
 
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
@@ -287,7 +287,7 @@ module.exports = function(app) {
   //Link routes and actions
   app.post('/users', findAllUsers);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.post('/user/:username', findOne);
+  app.post('/user/:username', findOneUser);
   app.post('/user', addUser);
   // dont forget to change :username by :id if we switch in the fonction 
   app.put('/user', updateUser);
