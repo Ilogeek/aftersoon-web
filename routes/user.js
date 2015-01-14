@@ -359,13 +359,13 @@ module.exports = function(app) {
   //Link routes and actions
   app.post('/users', findAllUsers);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.post('/user/show/:username', findOneUser);
+  app.post('/user/:username', findOneUser);
   app.post('/user', addUser);
   // dont forget to change :username by :id if we switch in the fonction 
   app.put('/user', updateUser);
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/user', deleteUser);
   app.get('/user/nick/:username', isNicknameTaken);
-  app.post('/user/logout', deleteThisGCMid);
-  app.post('/user/login', addThisGCMid);
+  app.post('/auth/logout', deleteThisGCMid);
+  app.post('/auth/login', addThisGCMid);
 }
