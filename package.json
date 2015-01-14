@@ -14,7 +14,8 @@
     "body-parser": "*",
     "ejs": "*",
     "polyline": "*",
-    "request": "*"
+    "request": "*",
+    "node-gcm": "*"
   },
   "engines": {
     "node": "0.10.x"

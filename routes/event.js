@@ -26,7 +26,7 @@ module.exports = function(app) {
    */
   findAllEvents = function(req, res) {
     console.log("POST - /events");
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -61,7 +61,7 @@ module.exports = function(app) {
    */
   findOneEvent = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -105,7 +105,7 @@ module.exports = function(app) {
    */
   addEvent = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was failure
@@ -118,7 +118,7 @@ module.exports = function(app) {
             var event = new Event({
                 title: req.body.title,
                 date: req.body.date,
-                owner: req.body.myUsername,
+                owner: req.body.myUsername.toLowerCase(),
                 guests: req.body.guests,
                 place_name: req.body.place_name,
                 place_gps: req.body.place_gps,
@@ -166,7 +166,7 @@ module.exports = function(app) {
   updateEvent = function(req, res) {
 
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -186,7 +186,7 @@ module.exports = function(app) {
                 
                 if (req.body.title != null) event.title = req.body.title;
                 if (req.body.date != null) event.date = req.body.date;
-                if (req.body.owner != null) event.owner = req.body.owner;
+                if (req.body.owner != null) event.owner = req.body.owner.toLowerCase();
                 if (req.body.guests != null) event.guests = req.body.guests;
                 if (req.body.coming != null) event.coming = req.body.coming;
                 if (req.body.refusedBy != null) event.refusedBy = req.body.refusedBy;
@@ -235,7 +235,7 @@ module.exports = function(app) {
    */
   deleteEvent = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -285,7 +285,7 @@ module.exports = function(app) {
    * @param {Object} res HTTP response object.
    */
   changeStatus = function(req, res) {
-
+    req.body.myUsername = req.body.myUsername.toLowerCase();
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         

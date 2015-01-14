@@ -28,7 +28,7 @@ module.exports = function(app) {
    */
   findAllNows = function(req, res) {
     console.log("POST - /nows");
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -63,7 +63,7 @@ module.exports = function(app) {
    */
   findOneNow = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -107,7 +107,7 @@ module.exports = function(app) {
    */
   addNow = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was failure
@@ -121,7 +121,7 @@ module.exports = function(app) {
                 travelMode: req.body.travelMode,
                 date: Date.now(),
                 owner: req.body.myUsername,
-                guest: req.body.guest,
+                guest: req.body.guest.toLowerCase(),
                 latOwner: req.body.latOwner,
                 lonOwner: req.body.lonOwner,
                 version : 1
@@ -171,7 +171,7 @@ module.exports = function(app) {
   updateNow = function(req, res) {
 
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -241,7 +241,7 @@ module.exports = function(app) {
    */
   deleteNow = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user

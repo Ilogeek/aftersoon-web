@@ -25,7 +25,7 @@ module.exports = function(app) {
    */
   findAllUsers = function(req, res) {
     console.log("POST - /users");
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -60,7 +60,7 @@ module.exports = function(app) {
    */
   findOneUser = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -68,7 +68,7 @@ module.exports = function(app) {
 
           //Solution by Username which is unique so its like an ID
           console.log("POST - /user/:username");
-          return User.findOne({username:req.params.username}, function(err,user) {
+          return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
           
           // Solution by ID
           //console.log("GET - /user/:id");
@@ -109,7 +109,7 @@ module.exports = function(app) {
    */
   addUser = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was failure
@@ -122,7 +122,7 @@ module.exports = function(app) {
             var user = new User({
                 email: req.body.email,
                 password: req.body.password,
-                username: req.body.username,
+                username: req.body.username.toLowerCase(),
                 adresse: req.body.adresse
             });
 
@@ -167,7 +167,7 @@ module.exports = function(app) {
   updateUser = function(req, res) {
 
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -175,7 +175,7 @@ module.exports = function(app) {
 
               //Solution by Username which is unique so its like an ID
               console.log("PUT - /user");
-              return User.findOne({username:req.body.myUsername}, function(err,user) {
+              return User.findOne({username:req.body.myUsername.toLowerCase()}, function(err,user) {
               
               // Solution by ID
               //console.log("PUT - /user/:id");
@@ -233,7 +233,7 @@ module.exports = function(app) {
    */
   deleteUser = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -265,7 +265,7 @@ module.exports = function(app) {
   }
 
   function isNicknameTaken(req, res){
-      return User.findOne({username:req.params.username}, function(err,user) {
+      return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
       
         if(!user) {
           res.statusCode = 200;

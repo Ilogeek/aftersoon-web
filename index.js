@@ -22,6 +22,9 @@ mongoose.connect(connStr, function(err) {
     console.log('Successfully connected to MongoDB');
 });
 
+// Push message using GCM
+var Push = require('./push')(app);
+
 // User
 var User       = require('./models/user'),
     UserRoutes = require('./routes/user')(app);

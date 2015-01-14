@@ -19,7 +19,8 @@ var UserSchema = new Schema({
     friends         : {type: [String], default: []}, // accepted friends
     askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
     requestFrom     : {type: [String], default: []}, // people WHO asked to be friend with me
-    bannedBy        : {type: [String], default: []} // people who refused to be friend with me
+    bannedBy        : {type: [String], default: []}, // people who refused to be friend with me
+    GCMid           : {type: String, required: true}
 });
 
 UserSchema.virtual('isLocked').get(function() {
