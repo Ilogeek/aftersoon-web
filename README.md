@@ -99,7 +99,8 @@ var NowSchema = new Schema({
 - `/user/<USERNAME>` avec la methode `DELETE` pour supprimer l'utilisateur ayant l'username `<USERNAME>`
 - `/user` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username passé en paramètre (myUsername)
 - `/user/nick/<USERNAME>` avec la methode `GET` pour regarder si l'username <USERNAME> est déjà pris (retourne 0 ou 1);
-- `/user/logout` avec la methode `POST` pour supprimer le GCMid courant (passé dans les paramètres) 
+- `/user/logout` avec la methode `POST` pour supprimer le GCMid courant (passé dans les paramètres)
+- `/user/login` avec la methode `POST` pour ajouter le GCMid courant (passé dans les paramètres) 
 
 ### EVENEMENTS
 - `/events` avec la methode `POST` pour avoir la liste des evenements

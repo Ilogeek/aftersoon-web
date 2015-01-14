@@ -116,8 +116,8 @@ module.exports = function(app) {
    * @param {Object} res HTTP response object.
    */
   addUser = function(req, res) {
-
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was failure
@@ -307,6 +307,7 @@ module.exports = function(app) {
              if(myselfUser.GCMid.contains(req.body.GCMid))
              {
                 myselfUser.GCMid.splice(myselfUser.GCMid.indexOf(req.body.GCMid),1); 
+                myselfUser.save(function(err) {});
                 res.statusCode = 200;
                 return res.send({status:200, message: 'GCMid Removed.'});  
              }
@@ -332,8 +333,9 @@ module.exports = function(app) {
              if(!myselfUser.GCMid.contains(req.body.GCMid) && req.body.GCMid != null)
              {
                 myselfUser.GCMid.push(req.body.GCMid); 
+                myselfUser.save(function(err) {});
                 res.statusCode = 200;
-                return res.send({status:200, message: 'Connected, GCMid Added.'});  
+                return res.send({status:200, message: 'Connected, GCMid Added.'});
              }
              else if(req.body.GCMid != null)
              {
@@ -357,7 +359,7 @@ module.exports = function(app) {
   //Link routes and actions
   app.post('/users', findAllUsers);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.post('/user/:username', findOneUser);
+  app.post('/user/show/:username', findOneUser);
   app.post('/user', addUser);
   // dont forget to change :username by :id if we switch in the fonction 
   app.put('/user', updateUser);
