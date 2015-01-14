@@ -306,7 +306,11 @@ module.exports = function(app) {
             
              if(myselfUser.GCMid.contains(req.body.GCMid))
              {
-                myselfUser.GCMid.splice(myselfUser.GCMid.indexOf(req.body.GCMid),1); 
+                //console.log('indexof : ' + myselfUser.GCMid.indexOf(req.body.GCMid));
+                //console.log(myselfUser.GCMid);
+                myselfUser.GCMid.splice(myselfUser.GCMid.indexOf(req.body.GCMid),1);
+                //console.log('----------'); 
+                //console.log(myselfUser.GCMid);
                 myselfUser.save(function(err) {});
                 res.statusCode = 200;
                 return res.send({status:200, message: 'GCMid Removed.'});  
@@ -339,8 +343,8 @@ module.exports = function(app) {
              }
              else if(req.body.GCMid != null)
              {
-                res.statusCode = 400;
-                return res.send({status:400, message: 'Connected, BUT GCMid already existed.'});
+                res.statusCode = 200;
+                return res.send({status:200, message: 'Connected, BUT GCMid already existed.'});
              }
              else
              {
