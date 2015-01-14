@@ -4,13 +4,22 @@
  * @module      :: Routes
  * @description :: Maps routes and actions
  */
-
+ Array.prototype.contains = function(obj) {
+     var i = this.length;
+     while (i--) {
+         if (this[i] === obj) {
+             return true;
+         }
+     }
+     return false;
+ }
 
 module.exports = function(app) {
 
   var bodyParser = require('body-parser'),
       rqst       = require('request'),
       util       = require('util');
+      //push       = require('./push');
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }))
@@ -144,6 +153,7 @@ module.exports = function(app) {
 
                 console.log("Now created");
                 res.statusCode = 200;
+                push.sendPush(now.guest, {});
                 return res.send({ status: 200, now:now });
 
               }

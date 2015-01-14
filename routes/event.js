@@ -4,7 +4,15 @@
  * @module      :: Routes
  * @description :: Maps routes and actions
  */
-
+ Array.prototype.contains = function(obj) {
+     var i = this.length;
+     while (i--) {
+         if (this[i] === obj) {
+             return true;
+         }
+     }
+     return false;
+ }
 
 module.exports = function(app) {
 

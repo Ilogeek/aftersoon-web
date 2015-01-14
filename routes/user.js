@@ -4,7 +4,15 @@
  * @module      :: Routes
  * @description :: Maps routes and actions
  */
-
+ Array.prototype.contains = function(obj) {
+     var i = this.length;
+     while (i--) {
+         if (this[i] === obj) {
+             return true;
+         }
+     }
+     return false;
+ }
 
 module.exports = function(app) {
 
@@ -120,13 +128,14 @@ module.exports = function(app) {
             console.log(req.body);
 
             var user = new User({
-                email: req.body.email,
-                password: req.body.password,
-                username: req.body.username.toLowerCase(),
-                adresse: req.body.adresse
+                email    : req.body.email,
+                password : req.body.password,
+                username : req.body.username.toLowerCase(),
+                adresse  : req.body.adresse,
+                GCMid    : req.body.GCMid
             });
 
-            if (req.body.gps != null) user.gps = req.body.gps;
+            if (req.body.gps != null)       user.gps       = req.body.gps;
             if (req.body.telephone != null) user.telephone = req.body.telephone;
 
             user.save(function(err) {
@@ -193,6 +202,7 @@ module.exports = function(app) {
                 if (req.body.newPassword != null) user.password = req.body.newPassword;
                 if (req.body.gps != null) user.gps = req.body.gps;
                 if (req.body.telephone != null) user.telephone = req.body.telephone;
+                if (req.body.GCMid != null && !user.GCMid.contains(req.body.GCMid)) user.GCMid.push(req.body.GCMid);
 
                 return user.save(function(err) {
                   console.log(err);
@@ -282,6 +292,29 @@ module.exports = function(app) {
           return res.send({ status: 500, exist: -1 });
         }
       });
+  }
+
+  function deleteThisGCMid(req, res){
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+        if (err) throw err;
+        
+        // login was successful if we have a user
+        if (myselfUser) {
+
+            //Solution by Username which is unique so its like an ID
+            console.log("POST - /user/logout");
+            
+             if(myselfUser.GCMid.contains(req.body.GCMid))
+             {
+                
+             }
+
+          }
+          else {
+            res.statusCode = 403;
+            return res.send({status:403, message: 'Bad Authentication.'});
+          }
+        });
   }
 
   //Link routes and actions

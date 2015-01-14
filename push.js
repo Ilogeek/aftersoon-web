@@ -16,8 +16,7 @@ function sendPush(user, dataObject){
     });
 
     var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
-    var registrationId = [];
-    registrationId.push(user.GCMid);
+    var registrationId = user.GCMid;
 
     // OPTIONAL
     // add new key-value in data object
@@ -56,7 +55,7 @@ function sendPush(user, dataObject){
 
 
 app.get('/push', function(req, res) {
-   var user = {GCMid:"APA91bE7T73QqLw6Kku1YeWQ2nwsSmepWg8DXlHIbgFx3hGHJwvevRowoG_RbWZdcLJS0EB0U1AkxWqyOk-aAky3xkXE1y5CIQnqJ6UozfeCXlU0FkxGtLyzAqz7zKqukAPWA9wpnjOsg5H7CxyIz2jY_EMQf-0wR_tHFSGqhwyzPo5nwqQjfyY"};
+   var user = {GCMid:["APA91bE7T73QqLw6Kku1YeWQ2nwsSmepWg8DXlHIbgFx3hGHJwvevRowoG_RbWZdcLJS0EB0U1AkxWqyOk-aAky3xkXE1y5CIQnqJ6UozfeCXlU0FkxGtLyzAqz7zKqukAPWA9wpnjOsg5H7CxyIz2jY_EMQf-0wR_tHFSGqhwyzPo5nwqQjfyY"]};
    sendPush(user,{message: 'sale pute. plus jamais CUDA'});
    return res.send({ status: 200 });
 });

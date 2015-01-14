@@ -258,7 +258,7 @@ module.exports = function(app) {
                         } else {
                           if(err2.name == 'ValidationError') {
                             res.statusCode = 400;
-                            res.send({ status:400, message: 'Validation error' });
+                            res.send({ status:400, message: 'Validation error (err2.name)' });
                           } else {
                             res.statusCode = 500;
                             res.send({ status: 500 });
@@ -270,7 +270,7 @@ module.exports = function(app) {
                     } else {
                       if(err.name == 'ValidationError') {
                         res.statusCode = 400;
-                        res.send({ status:400, message: 'Validation error' });
+                        res.send({ status:400, message: 'Validation error (else)' });
                       } else {
                         res.statusCode = 500;
                         res.send({ status: 500 });

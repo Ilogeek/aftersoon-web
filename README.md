@@ -31,7 +31,8 @@ var UserSchema = new Schema({
     friends         : {type: [String], default: []}, // accepted friends
     askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
     requestFrom     : {type: [String], default: []}, // people WHO asked to be friend with me
-    bannedBy        : {type: [String], default: []} // people who refused to be friend with me
+    bannedBy        : {type: [String], default: []}, // people who refused to be friend with me
+    GCMid           : {type: String, required: true}
 });
 ```
 #### Method
@@ -108,6 +109,7 @@ var NowSchema = new Schema({
 
 ### AMIS
 - `/friend/add/<USERNAME>` avec la methode `POST` pour demander l'utilisateur `<USERNAME>` en ami
+- `/friend/add/email/<EMAIL>` avec la methode `POST` pour demander l'utilisateur `<EMAIL>` en ami
 - `/friend/accept/<USERNAME>` avec la methode `POST` pour accepter la demande de `<USERNAME>`
 - `/friend/refuse/<USERNAME>` avec la methode `POST` pour refuser la demande de `<USERNAME>`
 - `/friend/remove/<USERNAME>` avec la methode `POST` pour supprimer `<USERNAME>` de sa liste d'amis
