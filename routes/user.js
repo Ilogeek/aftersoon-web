@@ -306,7 +306,44 @@ module.exports = function(app) {
             
              if(myselfUser.GCMid.contains(req.body.GCMid))
              {
-                
+                myselfUser.GCMid.splice(myselfUser.GCMid.indexOf(req.body.GCMid),1); 
+                res.statusCode = 200;
+                return res.send({status:200, message: 'GCMid Removed.'});  
+             }
+
+          }
+          else {
+            res.statusCode = 403;
+            return res.send({status:403, message: 'Bad Authentication.'});
+          }
+        });
+  }
+
+  function addThisGCMid(req, res){
+    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+        if (err) throw err;
+        
+        // login was successful if we have a user
+        if (myselfUser) {
+
+            //Solution by Username which is unique so its like an ID
+            console.log("POST - /user/login");
+            
+             if(!myselfUser.GCMid.contains(req.body.GCMid) && req.body.GCMid != null)
+             {
+                myselfUser.GCMid.push(req.body.GCMid); 
+                res.statusCode = 200;
+                return res.send({status:200, message: 'Connected, GCMid Added.'});  
+             }
+             else if(req.body.GCMid != null)
+             {
+                res.statusCode = 400;
+                return res.send({status:400, message: 'Connected, BUT GCMid already existed.'});
+             }
+             else
+             {
+                res.statusCode = 400;
+                return res.send({status:400, message: 'Connected, BUT NO GCMID GIVEN !'});
              }
 
           }
@@ -327,5 +364,6 @@ module.exports = function(app) {
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/user', deleteUser);
   app.get('/user/nick/:username', isNicknameTaken);
-
+  app.post('/user/logout', deleteThisGCMid);
+  app.post('/user/login', addThisGCMid);
 }

@@ -19,7 +19,7 @@ module.exports = function(app) {
   var bodyParser = require('body-parser'),
       rqst       = require('request'),
       util       = require('util');
-      //push       = require('./push');
+      push       = require('../push');
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }))
