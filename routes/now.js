@@ -27,7 +27,7 @@ module.exports = function(app) {
   // parse application/json
   app.use(bodyParser.json())
 
-  var Now = require('../models/now');
+  var Now   = require('../models/now');
   var User  = require('../models/user');
 
   /**
@@ -153,7 +153,7 @@ module.exports = function(app) {
 
                 console.log("Now created");
                 res.statusCode = 200;
-                push.sendPush(now.guest, {});
+                //push.sendPush(now.guest, {});
                 return res.send({ status: 200, now:now });
 
               }
@@ -200,10 +200,10 @@ module.exports = function(app) {
 
 
                 if(req.body.hasOwnProperty('responseMessage')) now.responseMessage = req.body.responseMessage;
-                if(req.body.hasOwnProperty('responseStatus')) now.responseStatus = req.body.responseStatus;
-                if(req.body.hasOwnProperty('travelMode')) now.travelMode = req.body.travelMode;  
-                if(req.body.hasOwnProperty('latGuest')) now.latGuest = req.body.latGuest;           
-                if(req.body.hasOwnProperty('lonGuest')) now.lonGuest = req.body.lonGuest;            
+                if(req.body.hasOwnProperty('responseStatus'))  now.responseStatus = req.body.responseStatus;
+                if(req.body.hasOwnProperty('travelMode'))      now.travelMode = req.body.travelMode;  
+                if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
+                if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;            
                 now.version = now.version + 1;
                 
                 // if we have the 2 coordinates AND responseStatus is OK we can calculate
@@ -342,8 +342,8 @@ function calculateDestination( nowObject, req, res ){
             middleStep    = steps[stepNumber];
             arrayPolyline = require('polyline').decode(middleStep.polyline.points);
 
-            percentDistanceStep = ((middleDist - oldActualDist) * 100) / (actualDist - oldActualDist);
-            arrayPolylineIndex  = Math.round(arrayPolyline.length * percentDistanceStep / 100);
+            percentDistanceStep      = ((middleDist - oldActualDist) * 100) / (actualDist - oldActualDist);
+            arrayPolylineIndex       = Math.round(arrayPolyline.length * percentDistanceStep / 100);
             nowObject.latMiddlePoint = arrayPolyline[arrayPolylineIndex][0];
             nowObject.lonMiddlePoint = arrayPolyline[arrayPolylineIndex][1];
 

@@ -444,7 +444,7 @@ module.exports = function(app) {
   };
 
   //Link routes and actions
-  app.post('/friend/add/:username', addFriend);
+  app.post('/friend/add/:username'   , addFriend);
   app.post('/friend/add/email/:email', addFriendEmail);
   app.post('/friend/accept/:username', acceptFriend);
   app.post('/friend/refuse/:username', refuseFriend);
