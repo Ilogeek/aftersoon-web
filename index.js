@@ -61,9 +61,31 @@ var Event       = require('./models/event'),
  // CRON TASK
  // Clean database every hour 
  var rule = new schedule.RecurrenceRule();
- rule.minute = 45;
+ rule.minute = 15;
+
+ var _MS_IN_6_HOURS = 1000 * 60 * 60 * 6;
 
  var cleanDatabase = schedule.scheduleJob(rule, function(){
-     console.log('The answer to life, the universe, and everything!');
+     //console.log('The answer to life, the universe, and everything!');
+     Now.find(function(err, nows) {
+        //console.log('inside');
+         nows.forEach(function(now) {
+            //console.log(Math.abs(Date.now() - now.date.getTime()));
+            //console.log(_MS_IN_6_HOURS);
+            //console.log(Math.abs(Date.now() - now.date.getTime())> _MS_IN_6_HOURS);
+           if(Math.abs(new Date().getTime() - now.date.getTime())> _MS_IN_6_HOURS)
+           {
+                //console.log('in the loop');
+                now.remove(function(err) {
+                  if(!err) {
+                    console.log('Now Removed');
+                  } else {
+                    console.log('Internal error: %s',err.message);
+                  }
+                });
+           }
+         });
+ 
+       });
  });
 

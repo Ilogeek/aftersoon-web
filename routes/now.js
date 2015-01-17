@@ -181,7 +181,8 @@ module.exports = function(app) {
   updateNow = function(req, res, acceptedOrNot, idNow) {
 
     req.params.id = idNow;
-    req.body.responseStatus = acceptedOrNot;
+    req.body.guestStatus = acceptedOrNot;
+    if (req.body.guestStatus == 0) req.body.guestStatus +=2;
 
     User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
@@ -202,17 +203,18 @@ module.exports = function(app) {
 
 
                 if(req.body.hasOwnProperty('responseMessage')) now.responseMessage = req.body.responseMessage;
-                if(req.body.hasOwnProperty('responseStatus'))  now.responseStatus = req.body.responseStatus;
+                if(req.body.hasOwnProperty('guestStatus'))  now.guestStatus = req.body.guestStatus;
                 if(req.body.hasOwnProperty('travelMode'))      now.travelMode = req.body.travelMode;  
                 if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
                 if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;            
                 now.version = now.version + 1;
 
+                if(acceptedOrNot == 0){now.eventStatus = 2;}
                 
                 // if we have the 2 coordinates AND responseStatus is OK we can calculate
-                if(now.latGuest && now.lonGuest && now.latOwner && now.lonOwner && now.responseStatus)
+                if(now.latGuest && now.lonGuest && now.latOwner && now.lonOwner && now.guestStatus)
                 {
-                    //calculateDestination(now, req, res);
+                    calculateDestination(now, req, res);
                 }
             
 
@@ -360,13 +362,15 @@ function calculateDestination( nowObject, req, res ){
            var radiusOrRankBy = "&radius="+nowObject.radius;
            
            if(nowObject.rankBy == "DISTANCE") radiusOrRankBy = "&rankby=distance";
+           radiusOrRankBy = "&rankby=distance";
            
            var urlRequest = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ nowObject.latMiddlePoint +","+ nowObject.lonMiddlePoint + radiusOrRankBy+"&types="+ nowObject.type +"&key="+apiKey//+"&opennow=yes";
 
            rqst(urlRequest, function (err, response, body) {
              if (!err && response.statusCode == 200) {
                //console.log(JSON.parse(body).results[0]);
-               nowObject.placesAround = JSON.parse(body).results;
+               nowObject.placesAround = JSON.parse(body).results[0];
+               nowObject.eventStatus = 1;
 
                nowObject.save(function(err) {
                   if(err) {
@@ -375,7 +379,13 @@ function calculateDestination( nowObject, req, res ){
                     console.log("Places and middlePoint saved");
                     if(req != null && res !=null)
                     {
-                      findOneNow(req, res);
+                      //findOneNow(req, res);
+                      /*if(nowObject.placesAround == [])
+                      {
+                        nowObject.rankby = "DISTANCE";
+                        nowObject.save();
+                        calculateDestination(nowObject, req, res);
+                      }*/
                     }
                   }
                 });

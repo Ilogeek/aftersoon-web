@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var NowSchema = new Schema({
     titleMessage       : {type: String},
     responseMessage    : {type: String},
-    responseStatus     : {type: Number, enum: [-1, 0, 1], default:-1},
+//  responseStatus     : {type: Number, enum: [-1, 0, 1], default:-1},
     travelMode         : {type: String, required:true, enum: ['walking', 'driving', 'transit'], default: 'transit'},
 //  openNow            : {type: String, enum: ['no', 'yes'], default: 'no'},
     radius             : {type: Number, default:200},
@@ -23,7 +23,9 @@ var NowSchema = new Schema({
     // Type from https://developers.google.com/places/documentation/supported_types
     // 'none' will return the middlepoint between the 2 persons
     placesAround       : {type: Array,  default:[]},
-    version            : {type: Number, default:1}
+    version            : {type: Number, default:1},
+    guestStatus        : {type: Number, default:0},
+    eventStatus        : {type: Number, default:0}
 });
 
 module.exports = mongoose.model('Now', NowSchema);
