@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var NowSchema = new Schema({
     titleMessage       : {type: String},
     responseMessage    : {type: String},
-    responseStatus     : {type: Number, enum: [1, 0]},
+    responseStatus     : {type: Number, enum: [-1, 0, 1], default:-1},
     travelMode         : {type: String, required:true, enum: ['walking', 'driving', 'transit'], default: 'transit'},
 //  openNow            : {type: String, enum: ['no', 'yes'], default: 'no'},
     radius             : {type: Number, default:200},

@@ -171,14 +171,12 @@ module.exports = function(app) {
 
   };
 
-
-
   /**
    * Update a Now by its ID
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  updateNow = function(req, res) {
+  updateNow = function(req, res, acceptedOrNot) {
 
 
     User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
@@ -200,7 +198,7 @@ module.exports = function(app) {
 
 
                 if(req.body.hasOwnProperty('responseMessage')) now.responseMessage = req.body.responseMessage;
-                if(req.body.hasOwnProperty('responseStatus'))  now.responseStatus = req.body.responseStatus;
+                if(req.body.hasOwnProperty('responseStatus'))  now.responseStatus = acceptedOrNot;
                 if(req.body.hasOwnProperty('travelMode'))      now.travelMode = req.body.travelMode;  
                 if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
                 if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;            
@@ -242,6 +240,9 @@ module.exports = function(app) {
         });
   };
 
+  /** Small update for Steve idea **/
+  function refuseNow(req, res){ updateNow(req, res, 0); };
+  function acceptNow(req, res){ updateNow(req, res, 1); };
 
 
   /**
@@ -398,10 +399,12 @@ function calculateDestination( nowObject, req, res ){
   //Link routes and actions
   app.post('/nows', findAllNows);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.post('/now/:id', findOneNow);
+  app.post('/now/show/:id', findOneNow);
   app.post('/now', addNow);
   // dont forget to change :username by :id if we switch in the fonction 
-  app.put('/now/:id', updateNow);
+  //app.put('/now/:id', updateNow);
+  app.post('/now/accept/:id', acceptNow);
+  app.post('/now/refuse/:id', refuseNow);
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/now/:id', deleteNow);
   //app.post('/now/:id/userStatus', changeStatus);
