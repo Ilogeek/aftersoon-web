@@ -4,6 +4,7 @@ var mongoose   = require('mongoose');
 var bodyParser = require('body-parser');
 var util       = require('util');
 var rqst       = require('request');
+var schedule   = require('node-schedule');
 
 
 
@@ -55,5 +56,14 @@ var Event       = require('./models/event'),
  app.get('/map/json', function(req, res) {
     //res.setHeader('content-type', 'application/json');
     res.render('map/json');
+ });
+
+ // CRON TASK
+ // Clean database every hour 
+ var rule = new schedule.RecurrenceRule();
+ rule.minute = 45;
+
+ var cleanDatabase = schedule.scheduleJob(rule, function(){
+     console.log('The answer to life, the universe, and everything!');
  });
 

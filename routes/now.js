@@ -171,13 +171,17 @@ module.exports = function(app) {
 
   };
 
+
+
   /**
    * Update a Now by its ID
    * @param {Object} req HTTP request object.
    * @param {Object} res HTTP response object.
    */
-  updateNow = function(req, res, acceptedOrNot) {
+  updateNow = function(req, res, acceptedOrNot, idNow) {
 
+    req.params.id = idNow;
+    req.body.responseStatus = acceptedOrNot;
 
     User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
@@ -198,24 +202,27 @@ module.exports = function(app) {
 
 
                 if(req.body.hasOwnProperty('responseMessage')) now.responseMessage = req.body.responseMessage;
-                if(req.body.hasOwnProperty('responseStatus'))  now.responseStatus = acceptedOrNot;
+                if(req.body.hasOwnProperty('responseStatus'))  now.responseStatus = req.body.responseStatus;
                 if(req.body.hasOwnProperty('travelMode'))      now.travelMode = req.body.travelMode;  
                 if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
                 if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;            
                 now.version = now.version + 1;
+
                 
                 // if we have the 2 coordinates AND responseStatus is OK we can calculate
                 if(now.latGuest && now.lonGuest && now.latOwner && now.lonOwner && now.responseStatus)
                 {
-                    calculateDestination(now, req, res);
+                    //calculateDestination(now, req, res);
                 }
             
 
                 return now.save(function(err) {
                   if(!err) {
                     console.log('Updated');
-                    //res.statusCode = 200;
-                    //return res.send({ status: 200, now:now });
+
+                    res.statusCode = 200;
+                    return res.send({ status: 200, now:now });
+                    
                   } else {
                     if(err.name == 'ValidationError') {
                       res.statusCode = 400;
@@ -240,9 +247,8 @@ module.exports = function(app) {
         });
   };
 
-  /** Small update for Steve idea **/
-  function refuseNow(req, res){ updateNow(req, res, 0); };
-  function acceptNow(req, res){ updateNow(req, res, 1); };
+  acceptNow = function(req, res) { updateNow(req, res, 1, req.params.id); };
+  refuseNow = function(req, res) { updateNow(req, res, 0, req.params.id); };
 
 
   /**
@@ -402,7 +408,7 @@ function calculateDestination( nowObject, req, res ){
   app.post('/now/show/:id', findOneNow);
   app.post('/now', addNow);
   // dont forget to change :username by :id if we switch in the fonction 
-  //app.put('/now/:id', updateNow);
+  app.put('/now/:id', updateNow);
   app.post('/now/accept/:id', acceptNow);
   app.post('/now/refuse/:id', refuseNow);
   // dont forget to change :username by :id if we switch in the fonction 
