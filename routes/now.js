@@ -190,16 +190,40 @@ module.exports = function(app) {
 
 
                 var schedule = require('node-schedule');
-                var date_in_15_min = new Date(Date.now() + 1 * 60000);
+                var date_in_15_min = new Date(Date.now() + 15 * 60000);
+                var date_in_5_min  = new Date(Date.now() + 5  * 60000);
 
-                var j = schedule.scheduleJob(date_in_15_min, function(){
+                var reminder = schedule.scheduleJob(date_in_5_min, function(){
+                    Now.findById(now._id, function(err, now) {
+                        if(now) {
+                          if(now.guestStatus == 0)
+                          {
+                            
+                                User.findOne({username:now.guest}, function(err,user) {
+                                  sendPush(user, {type: "NOW_REMINDER_NO_ANSWER" , now: now});
+                                });
+                                console.log('Reminder - No answer from guest');
+                          }
+                        }
+                    });
+                });
+
+                var cancelled = schedule.scheduleJob(date_in_15_min, function(){
                     Now.findById(now._id, function(err, now) {
                         if(now) {
                           if(now.guestStatus == 0)
                           {
                             now.eventStatus = 2;
                             now.save(function(err) {
-                              if(!err) console.log('Now cancelled - No answer from guest');
+                              if(!err) {
+                                User.findOne({username:now.owner}, function(err,user) {
+                                  sendPush(user, {type: "NOW_NO_ANSWER_FROM_GUEST" , now: now});
+                                });
+                                User.findOne({username:now.guest}, function(err,user) {
+                                  sendPush(user, {type: "NOW_NO_ANSWER_FROM_GUEST" , now: now});
+                                });
+                                console.log('Now cancelled - No answer from guest');
+                              }
                             });
                           }
                         }
