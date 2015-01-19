@@ -190,15 +190,21 @@ module.exports = function(app) {
 
 
                 var schedule = require('node-schedule');
-                var date_in_15_min = new Date(Date.now() + 15 * 60000);
+                var date_in_15_min = new Date(Date.now() + 1 * 60000);
 
                 var j = schedule.scheduleJob(date_in_15_min, function(){
-                    now.eventStatus = 2;
-                    now.save(function(err) {
-                      if(!err) console.log('Now cancelled - No answer from guest');
-                      console.log(now);
+                    Now.findById(now._id, function(err, now) {
+                        if(now) {
+                          if(now.guestStatus == 0)
+                          {
+                            now.eventStatus = 2;
+                            now.save(function(err) {
+                              if(!err) console.log('Now cancelled - No answer from guest');
+                            });
+                          }
+                        }
                     });
-
+         
                 });
               
                 return res.send({ status: 200, now:now });
