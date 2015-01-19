@@ -24,7 +24,7 @@ mongoose.connect(connStr, function(err) {
 });
 
 // Push message using GCM
-var Push = require('./push')(app);
+var Push = require('./push');
 
 // User
 var User       = require('./models/user'),
@@ -61,12 +61,12 @@ var Event       = require('./models/event'),
  // CRON TASK
  // Clean database every hour 
  var rule = new schedule.RecurrenceRule();
- rule.minute = 15;
+ rule.minute = 00;
 
  var _MS_IN_6_HOURS = 1000 * 60 * 60 * 6;
 
  var cleanDatabase = schedule.scheduleJob(rule, function(){
-     //console.log('The answer to life, the universe, and everything!');
+     console.log('Hourly clean of the Now DB (events older than 6 hours will disappear)');
      Now.find(function(err, nows) {
         //console.log('inside');
          nows.forEach(function(now) {

@@ -18,8 +18,36 @@ module.exports = function(app) {
 
   var bodyParser = require('body-parser'),
       rqst       = require('request'),
-      util       = require('util');
-      push       = require('../push');
+      util       = require('util'),
+      gcm        = require('node-gcm');
+
+      sendPush = function (user, dataObject){
+
+          // create a message with default values
+          var message = new gcm.Message();
+
+          // or with object values
+          var message = new gcm.Message({
+              //collapseKey: 'demo',
+              delayWhileIdle: true,
+              timeToLive: 3,
+              data: dataObject
+          });
+
+          var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
+          var registrationId = user.GCMid;
+      
+          if(registrationId.length)
+          {
+              sender.send(message, registrationId, 4, function (err, result) {
+                  console.log(result);
+              });
+          }
+          else
+          {
+              console.log('Problem - No GCMid for ' + user.username);
+          }
+      }
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }))
@@ -44,7 +72,7 @@ module.exports = function(app) {
         if (myselfUser) {
 
             // function findAllNows
-            return Now.find(function(err, nows) {
+            return Now.find({$or:[ {'owner':myselfUser.username}, {'guest':myselfUser.username} ]}, function(err, nows) {
               if(!err) {
                 res.statusCode = 200;
                 return res.send({status:200, nows:nows});
@@ -204,23 +232,31 @@ module.exports = function(app) {
 
                 if(req.body.hasOwnProperty('responseMessage')) now.responseMessage = req.body.responseMessage;
                 if(req.body.hasOwnProperty('guestStatus'))  now.guestStatus = req.body.guestStatus;
-                if(req.body.hasOwnProperty('travelMode'))      now.travelMode = req.body.travelMode;  
+                if(req.body.hasOwnProperty('travelMode'))  
+                {
+                  if(now.travelMode == "TRANSIT" || req.body.travelMode == "TRANSIT")
+                  {
+                    now.travelMode == "TRANSIT";
+                  }
+                  else {
+                    now.travelMode == "DRIVING";
+                  }
+                }  
                 if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
                 if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;            
                 now.version = now.version + 1;
 
                 if(acceptedOrNot == 0){now.eventStatus = 2;}
                 
-                // if we have the 2 coordinates AND responseStatus is OK we can calculate
-                if(now.latGuest && now.lonGuest && now.latOwner && now.lonOwner && now.guestStatus)
-                {
-                    calculateDestination(now, req, res);
-                }
-            
-
                 return now.save(function(err) {
                   if(!err) {
                     console.log('Updated');
+
+                    // if we have the 2 coordinates AND responseStatus is OK we can calculate
+                    if(now.latGuest && now.lonGuest && now.latOwner && now.lonOwner && now.eventStatus != 2)
+                    {
+                        calculateDestination(now, req, res);
+                    }
 
                     res.statusCode = 200;
                     return res.send({ status: 200, now:now });
@@ -386,6 +422,12 @@ function calculateDestination( nowObject, req, res ){
                         nowObject.save();
                         calculateDestination(nowObject, req, res);
                       }*/
+                      User.findOne({username:nowObject.owner}, function(err,user) {
+                        sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                      });
+                      User.findOne({username:nowObject.guest}, function(err,user) {
+                        sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                      });
                     }
                   }
                 });
