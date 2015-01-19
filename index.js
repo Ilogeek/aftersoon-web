@@ -59,14 +59,14 @@ var Event       = require('./models/event'),
  });
 
  // CRON TASK
- // Clean database every hour 
+ // Clean database every half an hour
  var rule = new schedule.RecurrenceRule();
- rule.minute = 00;
+ rule.minute = [00,30];
 
  var _MS_IN_6_HOURS = 1000 * 60 * 60 * 6;
 
  var cleanDatabase = schedule.scheduleJob(rule, function(){
-     console.log('Hourly clean of the Now DB (events older than 6 hours will disappear)');
+     console.log('Every 30 minutes clean of the Now DB (events older than 6 hours will disappear)');
      Now.find(function(err, nows) {
         //console.log('inside');
          nows.forEach(function(now) {

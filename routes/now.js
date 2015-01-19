@@ -185,7 +185,20 @@ module.exports = function(app) {
 
 
                 User.findOne({username:now.guest}, function(err,user) {
-                  sendPush(user, {type: "NOW_INVITATION" , now: nowObject});
+                  sendPush(user, {type: "NOW_INVITATION" , now: now});
+                });
+
+
+                var schedule = require('node-schedule');
+                var date_in_15_min = new Date(Date.now() + 15 * 60000);
+
+                var j = schedule.scheduleJob(date_in_15_min, function(){
+                    now.eventStatus = 2;
+                    now.save(function(err) {
+                      if(!err) console.log('Now cancelled - No answer from guest');
+                      console.log(now);
+                    });
+
                 });
               
                 return res.send({ status: 200, now:now });
@@ -252,11 +265,11 @@ module.exports = function(app) {
 
                 if(acceptedOrNot == 0){
                   now.eventStatus = 2;
-                  User.findOne({username:nowObject.owner}, function(err,user) {
-                    sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                  User.findOne({username:now.owner}, function(err,user) {
+                    sendPush(user, {type: "NOW_CANCELLED" , now: now});
                   });
-                  User.findOne({username:nowObject.guest}, function(err,user) {
-                    sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                  User.findOne({username:now.guest}, function(err,user) {
+                    sendPush(user, {type: "NOW_CANCELLED" , now: now});
                   });
                 }
                 else {
@@ -276,11 +289,11 @@ module.exports = function(app) {
                     }
 
                     if(acceptedOrNot == 0){
-                      User.findOne({username:nowObject.owner}, function(err,user) {
-                        sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                      User.findOne({username:now.owner}, function(err,user) {
+                        sendPush(user, {type: "NOW_CANCELLED" , now: now});
                       });
-                      User.findOne({username:nowObject.guest}, function(err,user) {
-                        sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                      User.findOne({username:now.guest}, function(err,user) {
+                        sendPush(user, {type: "NOW_CANCELLED" , now: now});
                       });
                     }
 

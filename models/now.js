@@ -19,9 +19,8 @@ var NowSchema = new Schema({
     lonGuest           : {type: Number, default:0},
     latMiddlePoint     : {type: Number, default:0},
     lonMiddlePoint     : {type: Number, default:0},
-    type               : {type: String, enum: ['bar', 'cafe', 'library', 'movie_theater', 'museum', 'night_club', 'parking', 'restaurant', 'subway_station', 'none'], default: 'none'},
+    type               : {type: String, enum: ['bar', 'cafe', 'library', 'movie_theater', 'museum', 'night_club', 'parking', 'restaurant', 'subway_station', 'none'], default: 'bar'},
     // Type from https://developers.google.com/places/documentation/supported_types
-    // 'none' will return the middlepoint between the 2 persons
     placesAround       : {type: Array,  default:[]},
     version            : {type: Number, default:1},
     guestStatus        : {type: Number, default:0},
