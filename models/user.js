@@ -12,7 +12,7 @@ var UserSchema = new Schema({
     email           : {type: String, required: true, index: { unique: true }},
     password        : {type: String, required: true},
     telephone       : {type: String},
-    adresse         : {type: String, required: true},
+    adresse         : {type: String},
     gps             : {type: String},
     loginAttempts   : {type: Number, required: true, default: 0},
     lockUntil       : {type: Number},
