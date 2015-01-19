@@ -69,14 +69,14 @@ var EventSchema = new Schema({
 var NowSchema = new Schema({
     titleMessage       : {type: String},
     responseMessage    : {type: String},
-    responseStatus     : {type: Number, enum: [1, 0]},
+    guestStatus        : {type: Number, default:0},
+    eventStatus        : {type: Number, default:0},
     travelMode         : {type: String, required:true, enum: ['walking', 'driving', 'transit'], default: 'transit'},
     radius             : {type: Number, default:200},
     rankBy             : {type: String, enum: ['DISTANCE', 'PROMINENCE'], default: 'PROMINENCE'},
     date               : {type: Date,   required: true, default: Date.now},
     owner              : {type: String, required:true}, 
     guest              : {type: String, required:true}, 
-    seen               : {type: String}, // the owner can see if the message appeared on the guest's phone ? 
     latOwner           : {type: Number, default:0},
     lonOwner           : {type: Number, default:0}, 
     latGuest           : {type: Number, default:0},
@@ -99,8 +99,8 @@ var NowSchema = new Schema({
 - `/user/<USERNAME>` avec la methode `DELETE` pour supprimer l'utilisateur ayant l'username `<USERNAME>`
 - `/user` avec la methode `PUT` pour mettre à jour l'utilisateur ayant l'username passé en paramètre (myUsername)
 - `/user/nick/<USERNAME>` avec la methode `GET` pour regarder si l'username <USERNAME> est déjà pris (retourne 0 ou 1);
-- `/user/logout` avec la methode `POST` pour supprimer le GCMid courant (passé dans les paramètres)
-- `/user/login` avec la methode `POST` pour ajouter le GCMid courant (passé dans les paramètres) 
+- `/auth/logout` avec la methode `POST` pour supprimer le GCMid courant (passé dans les paramètres)
+- `/auth/login` avec la methode `POST` pour ajouter le GCMid courant (passé dans les paramètres) 
 
 ### EVENEMENTS
 - `/events` avec la methode `POST` pour avoir la liste des evenements
@@ -110,7 +110,8 @@ var NowSchema = new Schema({
 - `/event/<ID>` avec la methode `PUT` pour mettre à jour l'événement ayant l'id `<ID>`
 
 ### AMIS
-- `/friend/add/<USERNAME>` avec la methode `POST` pour demander l'utilisateur `<USERNAME>` en ami
+- `/friend/add/username/<USERNAME>` avec la methode `POST` pour demander l'utilisateur `<USERNAME>` en ami
+- `/friend/add/email/<EMAIL>` avec la methode `POST` pour demander l'utilisateur `<EMAIL>` en ami
 - `/friend/add/email/<EMAIL>` avec la methode `POST` pour demander l'utilisateur `<EMAIL>` en ami
 - `/friend/accept/<USERNAME>` avec la methode `POST` pour accepter la demande de `<USERNAME>`
 - `/friend/refuse/<USERNAME>` avec la methode `POST` pour refuser la demande de `<USERNAME>`
@@ -118,10 +119,11 @@ var NowSchema = new Schema({
 
 ### NOW
 - `/nows` avec la methode `POST` pour avoir la liste des 'Nows'
-- `/now/<ID>` avec la methode `POST` pour avoir les infos du 'Now' ayant l'id `<ID>`
+- `/now/show/<ID>` avec la methode `POST` pour avoir les infos du 'Now' ayant l'id `<ID>`
 - `/now` avec la methode `POST` pour créer un nouveau 'Now'
 - `/now/<ID>` avec la methode `DELETE` pour supprimer le 'Now' ayant l'id `<ID>`
-- `/now/<ID>` avec la methode `PUT` pour mettre à jour le 'Now' ayant l'id `<ID>`
+- `/now/accept/<ID>` avec la methode `PUT` pour mettre à jour le 'Now' ayant l'id `<ID>` et l'accepter
+- `/now/refuse/<ID>` avec la methode `PUT` pour mettre à jour le 'Now' ayant l'id `<ID>` et le refuser
 
 ## RECHERCHE : Calcul des trajets
 

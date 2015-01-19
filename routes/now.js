@@ -182,6 +182,12 @@ module.exports = function(app) {
                 console.log("Now created");
                 res.statusCode = 200;
                 //push.sendPush(now.guest, {});
+
+
+                User.findOne({username:now.guest}, function(err,user) {
+                  sendPush(user, {type: "NOW_INVITATION" , now: nowObject});
+                });
+              
                 return res.send({ status: 200, now:now });
 
               }
@@ -242,11 +248,22 @@ module.exports = function(app) {
                     now.travelMode == "DRIVING";
                   }
                 }  
-                if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
-                if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;            
                 now.version = now.version + 1;
 
-                if(acceptedOrNot == 0){now.eventStatus = 2;}
+                if(acceptedOrNot == 0){
+                  now.eventStatus = 2;
+                  User.findOne({username:nowObject.owner}, function(err,user) {
+                    sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                  });
+                  User.findOne({username:nowObject.guest}, function(err,user) {
+                    sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                  });
+                }
+                else {
+                  if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
+                  if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;
+
+                }
                 
                 return now.save(function(err) {
                   if(!err) {
@@ -256,6 +273,15 @@ module.exports = function(app) {
                     if(now.latGuest && now.lonGuest && now.latOwner && now.lonOwner && now.eventStatus != 2)
                     {
                         calculateDestination(now, req, res);
+                    }
+
+                    if(acceptedOrNot == 0){
+                      User.findOne({username:nowObject.owner}, function(err,user) {
+                        sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                      });
+                      User.findOne({username:nowObject.guest}, function(err,user) {
+                        sendPush(user, {type: "NOW_CANCELLED" , now: nowObject});
+                      });
                     }
 
                     res.statusCode = 200;
@@ -370,77 +396,113 @@ function calculateDestination( nowObject, req, res ){
 
         rqst(requestString, function (err, response, body) {
           if (!err && response.statusCode == 200) {
-            
-            resJSON    = JSON.parse(body).routes[0];
-            totalDist  = resJSON.legs[0].distance.value;
-            middleDist = totalDist /2;
-            steps      = resJSON.legs[0].steps;
-            
-            while(actualDist < middleDist)
+            if(JSON.parse(body).status == 'OK')
             {
-               stepNumber++;
-               oldActualDist = actualDist;
-               actualDist   += steps[stepNumber].distance.value;
+               resJSON    = JSON.parse(body).routes[0];
+               totalDist  = resJSON.legs[0].distance.value;
+               middleDist = totalDist /2;
+               steps      = resJSON.legs[0].steps;
+               
+               while(actualDist < middleDist)
+               {
+                  stepNumber++;
+                  oldActualDist = actualDist;
+                  actualDist   += steps[stepNumber].distance.value;
+               }
+
+               
+               middleStep    = steps[stepNumber];
+               arrayPolyline = require('polyline').decode(middleStep.polyline.points);
+
+               percentDistanceStep      = ((middleDist - oldActualDist) * 100) / (actualDist - oldActualDist);
+               arrayPolylineIndex       = Math.round(arrayPolyline.length * percentDistanceStep / 100);
+               nowObject.latMiddlePoint = arrayPolyline[arrayPolylineIndex][0];
+               nowObject.lonMiddlePoint = arrayPolyline[arrayPolylineIndex][1];
+
+              //return middlePoint;
+
+              var apiKey         = "AIzaSyDlKaDgFHRsl6TbqSa9bYxspYwVCaZb_XM";
+              var radiusOrRankBy = "&radius="+nowObject.radius;
+              
+              if(nowObject.rankBy == "DISTANCE") radiusOrRankBy = "&rankby=distance";
+              radiusOrRankBy = "&rankby=distance";
+              
+              var urlRequest = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ nowObject.latMiddlePoint +","+ nowObject.lonMiddlePoint + radiusOrRankBy+"&types="+ nowObject.type +"&key="+apiKey//+"&opennow=yes";
+
+              rqst(urlRequest, function (err, response, body) {
+                if (!err && response.statusCode == 200) {
+                  //console.log(JSON.parse(body).results[0]);
+                  nowObject.placesAround = JSON.parse(body).results[0];
+                  nowObject.eventStatus = 1;
+
+                  nowObject.save(function(err) {
+                     if(err) {
+                       console.log('Error while saving now : ' + err);
+                     } else {
+                       console.log("Places and middlePoint saved");
+                       if(req != null && res !=null)
+                       {
+                         //findOneNow(req, res);
+                         /*if(nowObject.placesAround == [])
+                         {
+                           nowObject.rankby = "DISTANCE";
+                           nowObject.save();
+                           calculateDestination(nowObject, req, res);
+                         }*/
+                         User.findOne({username:nowObject.owner}, function(err,user) {
+                           sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                         });
+                         User.findOne({username:nowObject.guest}, function(err,user) {
+                           sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                         });
+                       }
+                     }
+                   });
+
+                }
+                else {
+
+                  console.log('getPlacesAround - Connection problem');
+               
+                }
+              });
+            } // if JSON.parse(body).status == 'OK'
+            else
+            {
+              console.log('No middlePoint found because of coordinates');
+              nowObject.eventStatus = 2;
+              nowObject.guestStatus = 2;
+              nowObject.lonMiddlePoint = -1;
+              nowObject.latMiddlePoint = -1;
+              placesAround = [{error: 'No middle point found because of coordinates of users'}];
+
+              nowObject.save(function(err) {
+                 if(err) {
+                   console.log('Error while saving now : ' + err);
+                 } else {
+                   console.log("Places and middlePoint saved");
+                   if(req != null && res !=null)
+                   {
+                     //findOneNow(req, res);
+                     /*if(nowObject.placesAround == [])
+                     {
+                       nowObject.rankby = "DISTANCE";
+                       nowObject.save();
+                       calculateDestination(nowObject, req, res);
+                     }*/
+                     User.findOne({username:nowObject.owner}, function(err,user) {
+                       sendPush(user, {type: "PLACE_ERROR" , now: nowObject});
+                     });
+                     User.findOne({username:nowObject.guest}, function(err,user) {
+                       sendPush(user, {type: "PLACE_ERROR" , now: nowObject});
+                     });
+                   }
+                 }
+               });
             }
-
             
-            middleStep    = steps[stepNumber];
-            arrayPolyline = require('polyline').decode(middleStep.polyline.points);
 
-            percentDistanceStep      = ((middleDist - oldActualDist) * 100) / (actualDist - oldActualDist);
-            arrayPolylineIndex       = Math.round(arrayPolyline.length * percentDistanceStep / 100);
-            nowObject.latMiddlePoint = arrayPolyline[arrayPolylineIndex][0];
-            nowObject.lonMiddlePoint = arrayPolyline[arrayPolylineIndex][1];
-
-           //return middlePoint;
-
-           var apiKey         = "AIzaSyDlKaDgFHRsl6TbqSa9bYxspYwVCaZb_XM";
-           var radiusOrRankBy = "&radius="+nowObject.radius;
-           
-           if(nowObject.rankBy == "DISTANCE") radiusOrRankBy = "&rankby=distance";
-           radiusOrRankBy = "&rankby=distance";
-           
-           var urlRequest = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ nowObject.latMiddlePoint +","+ nowObject.lonMiddlePoint + radiusOrRankBy+"&types="+ nowObject.type +"&key="+apiKey//+"&opennow=yes";
-
-           rqst(urlRequest, function (err, response, body) {
-             if (!err && response.statusCode == 200) {
-               //console.log(JSON.parse(body).results[0]);
-               nowObject.placesAround = JSON.parse(body).results[0];
-               nowObject.eventStatus = 1;
-
-               nowObject.save(function(err) {
-                  if(err) {
-                    console.log('Error while saving now : ' + err);
-                  } else {
-                    console.log("Places and middlePoint saved");
-                    if(req != null && res !=null)
-                    {
-                      //findOneNow(req, res);
-                      /*if(nowObject.placesAround == [])
-                      {
-                        nowObject.rankby = "DISTANCE";
-                        nowObject.save();
-                        calculateDestination(nowObject, req, res);
-                      }*/
-                      User.findOne({username:nowObject.owner}, function(err,user) {
-                        sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
-                      });
-                      User.findOne({username:nowObject.guest}, function(err,user) {
-                        sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
-                      });
-                    }
-                  }
-                });
-
-             }
-             else {
-
-               console.log('getPlacesAround - Connection problem');
-            
-             }
-           });
-
-          }
+          } // if !err && response.statusCode == 200
           else {
 
             console.log('getMiddlePoint - Connection problem');
@@ -465,8 +527,4 @@ function calculateDestination( nowObject, req, res ){
   app.post('/now/refuse/:id', refuseNow);
   // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/now/:id', deleteNow);
-  //app.post('/now/:id/userStatus', changeStatus);
-  /* TODO app.get('/event/:id/invited', invitedUsers);
-  app.get('/event/:id/accepted',acceptedUsers);
-  app.get('/event/:id/refused', refusedUsers); */
 }

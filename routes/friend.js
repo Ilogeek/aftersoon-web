@@ -18,7 +18,37 @@
 
 module.exports = function(app) {
 
-  var bodyParser = require('body-parser');
+  var User       = require('../models/user'),
+      bodyParser = require('body-parser'),
+      gcm        = require('node-gcm');
+
+      sendPush = function (user, dataObject){
+
+          // create a message with default values
+          var message = new gcm.Message();
+
+          // or with object values
+          var message = new gcm.Message({
+              //collapseKey: 'demo',
+              delayWhileIdle: true,
+              timeToLive: 3,
+              data: dataObject
+          });
+
+          var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
+          var registrationId = user.GCMid;
+      
+          if(registrationId.length)
+          {
+              sender.send(message, registrationId, 4, function (err, result) {
+                  console.log(result);
+              });
+          }
+          else
+          {
+              console.log('Problem - No GCMid for ' + user.username);
+          }
+      }
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }))
@@ -26,7 +56,6 @@ module.exports = function(app) {
   // parse application/json
   app.use(bodyParser.json())
 
-  var User = require('../models/user');
 
   /**
    * Add a friend
@@ -76,6 +105,11 @@ module.exports = function(app) {
                       if(!err2) {
                         console.log('Updated');
                         res.statusCode = 200;
+
+                        User.findOne({username:user.username}, function(err,user) {
+                          sendPush(user, {type: "FRIEND_INVITATION_ASKED" , user: myselfUser});
+                        });
+
                         return res.send({ status: 200, user:myselfUser });
                         // TODO : SEND PUSH TO THE OTHER USER 
                       } else {
@@ -168,6 +202,11 @@ module.exports = function(app) {
                       if(!err2) {
                         console.log('Updated');
                         res.statusCode = 200;
+
+                        User.findOne({username:user.username}, function(err,user) {
+                          sendPush(user, {type: "FRIEND_INVITATION_ASKED" , user: myselfUser});
+                        });
+
                         return res.send({ status: 200, user:myselfUser });
                         // TODO : SEND PUSH TO THE OTHER USER 
                       } else {
@@ -252,6 +291,11 @@ module.exports = function(app) {
                         console.log(err2);
                         if(!err2) {
                           console.log('Updated');
+
+                          User.findOne({username:user.username}, function(err,user) {
+                            sendPush(user, {type: "FRIEND_INVITATION_ACCEPTED" , user: myselfUser});
+                          });
+
                           res.statusCode = 200;
                           return res.send({ status: 200, user:myselfUser });
                           // TODO : SEND PUSH TO THE OTHER USER 
@@ -444,7 +488,7 @@ module.exports = function(app) {
   };
 
   //Link routes and actions
-  app.post('/friend/add/:username'   , addFriend);
+  app.post('/friend/add/username/:username'   , addFriend);
   app.post('/friend/add/email/:email', addFriendEmail);
   app.post('/friend/accept/:username', acceptFriend);
   app.post('/friend/refuse/:username', refuseFriend);
