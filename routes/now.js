@@ -312,14 +312,14 @@ module.exports = function(app) {
                         calculateDestination(now, req, res);
                     }
 
-                    if(acceptedOrNot == 0){
+                    /*if(acceptedOrNot == 0){
                       User.findOne({username:now.owner}, function(err,user) {
                         sendPush(user, {type: "NOW_CANCELLED" , now: now});
                       });
                       User.findOne({username:now.guest}, function(err,user) {
                         sendPush(user, {type: "NOW_CANCELLED" , now: now});
                       });
-                    }
+                    }*/
 
                     res.statusCode = 200;
                     return res.send({ status: 200, now:now });
