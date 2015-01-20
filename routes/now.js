@@ -157,7 +157,7 @@ module.exports = function(app) {
             var now = new Now({
                 travelMode: req.body.travelMode,
                 date: Date.now(),
-                owner: req.body.myUsername,
+                owner: myselfUser.username,
                 guest: req.body.guest.toLowerCase(),
                 latOwner: req.body.latOwner,
                 lonOwner: req.body.lonOwner,
@@ -448,6 +448,7 @@ function calculateDestination( nowObject, req, res ){
             */
             if(JSON.parse(body).status == 'OK')
             {
+               // Avoid bug when people are at the same place
                if(JSON.parse(body).routes[0].legs[0].distance.value < 50)
                {
                   nowObject.latMiddlePoint = nowObject.latOwner;
