@@ -298,9 +298,9 @@ module.exports = function(app) {
                   User.findOne({username:now.owner}, function(err,user) {
                     sendPush(user, {type: "NOW_CANCELLED" , now: now});
                   });
-                  User.findOne({username:now.guest}, function(err,user) {
+                  /*User.findOne({username:now.guest}, function(err,user) {
                     sendPush(user, {type: "NOW_CANCELLED" , now: now});
-                  });
+                  });*/
                 }
                 else {
                   if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
@@ -439,28 +439,43 @@ function calculateDestination( nowObject, req, res ){
 
         rqst(requestString, function (err, response, body) {
           if (!err && response.statusCode == 200) {
+            /*
+            console.log(JSON.parse(body));
+            console.log('-------------------------');
+            console.log(JSON.parse(body).status);
+            console.log('-------------------------');
+            console.log(JSON.parse(body).routes[0].legs[0].distance); 
+            */
             if(JSON.parse(body).status == 'OK')
             {
-               resJSON    = JSON.parse(body).routes[0];
-               totalDist  = resJSON.legs[0].distance.value;
-               middleDist = totalDist /2;
-               steps      = resJSON.legs[0].steps;
-               
-               while(actualDist < middleDist)
+               if(JSON.parse(body).routes[0].legs[0].distance.value < 50)
                {
-                  stepNumber++;
-                  oldActualDist = actualDist;
-                  actualDist   += steps[stepNumber].distance.value;
+                  nowObject.latMiddlePoint = nowObject.latOwner;
+                  nowObject.lonMiddlePoint = nowObject.lonOwner;
                }
+               else
+               {
+                  resJSON    = JSON.parse(body).routes[0];
+                  totalDist  = resJSON.legs[0].distance.value;
+                  middleDist = totalDist /2;
+                  steps      = resJSON.legs[0].steps;
+                  
+                  while(actualDist < middleDist)
+                  {
+                     stepNumber++;
+                     oldActualDist = actualDist;
+                     actualDist   += steps[stepNumber].distance.value;
+                  }
 
-               
-               middleStep    = steps[stepNumber];
-               arrayPolyline = require('polyline').decode(middleStep.polyline.points);
+                  
+                  middleStep    = steps[stepNumber];
+                  arrayPolyline = require('polyline').decode(middleStep.polyline.points);
 
-               percentDistanceStep      = ((middleDist - oldActualDist) * 100) / (actualDist - oldActualDist);
-               arrayPolylineIndex       = Math.round(arrayPolyline.length * percentDistanceStep / 100);
-               nowObject.latMiddlePoint = arrayPolyline[arrayPolylineIndex][0];
-               nowObject.lonMiddlePoint = arrayPolyline[arrayPolylineIndex][1];
+                  percentDistanceStep      = ((middleDist - oldActualDist) * 100) / (actualDist - oldActualDist);
+                  arrayPolylineIndex       = Math.round(arrayPolyline.length * percentDistanceStep / 100);
+                  nowObject.latMiddlePoint = arrayPolyline[arrayPolylineIndex][0];
+                  nowObject.lonMiddlePoint = arrayPolyline[arrayPolylineIndex][1];
+               }
 
               //return middlePoint;
 
