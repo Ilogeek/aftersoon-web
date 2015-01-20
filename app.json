@@ -2,6 +2,5 @@
   "name": "Aftersoon",
   "description": "Web part of the project",
   "repository": "https://github.com/ilogeek/aftersoon-web",
-  "logo": "",
   "keywords": ["node", "aftersoon", "mongodb"]
 }

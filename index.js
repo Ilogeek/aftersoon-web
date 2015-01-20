@@ -23,38 +23,33 @@ mongoose.connect(connStr, function(err) {
     console.log('Successfully connected to MongoDB');
 });
 
-// Push message using GCM
-var Push = require('./push');
-
 // User
-var User       = require('./models/user'),
-    UserRoutes = require('./routes/user')(app);
+var User         = require('./models/user'),
+    UserRoutes   = require('./routes/user')(app);
 
 // Friend
 var FriendRoutes = require('./routes/friend')(app);
 
 // Now
-var Now       = require('./models/now'),
-    NowRoutes = require('./routes/now')(app);
+var Now          = require('./models/now'),
+    NowRoutes    = require('./routes/now')(app);
 
 // Event
-var Event       = require('./models/event'),
-    EventRoutes = require('./routes/event')(app);
-
-// Map
-//var Map = require('./map.js');
+var Event        = require('./models/event'),
+    EventRoutes  = require('./routes/event')(app);
 
 // Root
  app.get('/', function(request, response) {
-   response.send('Aftersoon');
+   response.send('<h1>Aftersoon</h1><p>An experimental project made by <a href="http://www.aernewein.eu">Antoine Ernewein</a>, <a href="http://steve.benedick.fr">Steve Benedick</a>, Etienne Heitz & <a href="http://hzilliox.fr">Hugo Zilliox</a></p>');
  });
 
+
+// Visual examples for destination calculation (CLIENT SIDE)
  app.get('/map', function(req, res) {
     res.render('map/index');
  });
 
  app.get('/map/json', function(req, res) {
-    //res.setHeader('content-type', 'application/json');
     res.render('map/json');
  });
 
@@ -66,26 +61,20 @@ var Event       = require('./models/event'),
  var _MS_IN_6_HOURS = 1000 * 60 * 60 * 6;
 
  var cleanDatabase = schedule.scheduleJob(rule, function(){
-     console.log('Every 30 minutes clean of the Now DB (events older than 6 hours will disappear)');
-     Now.find(function(err, nows) {
-        //console.log('inside');
-         nows.forEach(function(now) {
-            //console.log(Math.abs(Date.now() - now.date.getTime()));
-            //console.log(_MS_IN_6_HOURS);
-            //console.log(Math.abs(Date.now() - now.date.getTime())> _MS_IN_6_HOURS);
-           if(Math.abs(new Date().getTime() - now.date.getTime())> _MS_IN_6_HOURS)
-           {
-                //console.log('in the loop');
-                now.remove(function(err) {
-                  if(!err) {
-                    console.log('Now Removed');
-                  } else {
-                    console.log('Internal error: %s',err.message);
-                  }
-                });
-           }
-         });
- 
-       });
+  console.log('Every 30 minutes clean of the Now DB (events older than 6 hours will disappear)');
+  Now.find(function(err, nows) {
+    nows.forEach(function(now) {
+      if(Math.abs(new Date().getTime() - now.date.getTime())> _MS_IN_6_HOURS)
+      {
+        now.remove(function(err) {
+          if(!err) {
+            console.log('Now Removed');
+          } else {
+            console.log('Internal error: %s',err.message);
+          }
+        });
+      }
+    });
+  });
  });
 

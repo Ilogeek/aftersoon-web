@@ -2,25 +2,27 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     bcrypt = require('bcrypt'),
     SALT_WORK_FACTOR = 10,
-    // these values can be whatever you want - we're defaulting to a
-    // max of 5 attempts, resulting in a 2 hour lock
     MAX_LOGIN_ATTEMPTS = 5,
     LOCK_TIME = 2 * 60 * 60 * 1000;
 
 var UserSchema = new Schema({
     username        : {type: String, required: true, index: { unique: true }},
-    email           : {type: String, required: true, index: { unique: true }},
     password        : {type: String, required: true},
+    email           : {type: String, required: true, index: { unique: true }},
+
+    GCMid           : {type: [String], default: []},
+    
     telephone       : {type: String},
     adresse         : {type: String},
     gps             : {type: String},
-    loginAttempts   : {type: Number, required: true, default: 0},
-    lockUntil       : {type: Number},
+
     friends         : {type: [String], default: []}, // accepted friends
     askedToBeFriend : {type: [String], default: []}, // people I asked to be friend with me
     requestFrom     : {type: [String], default: []}, // people WHO asked to be friend with me
     bannedBy        : {type: [String], default: []}, // people who refused to be friend with me
-    GCMid           : {type: [String], default: []}
+    
+    loginAttempts   : {type: Number, required: true, default: 0},
+    lockUntil       : {type: Number}
 });
 
 UserSchema.virtual('isLocked').get(function() {
@@ -125,7 +127,5 @@ UserSchema.static('getAuthenticated', function(username, password, cb) {
         });
     });
 });
-
-var Event = require('../models/event');
 
 module.exports = mongoose.model('User', UserSchema);

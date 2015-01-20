@@ -197,11 +197,12 @@ module.exports = function(app) {
 
                 // we dont want the user to update its username right ?
 
-                if (req.body.email != null) user.email = req.body.email;
-                if (req.body.adresse != null) user.adresse = req.body.adresse;
+                if (req.body.email != null)       user.email = req.body.email;
+                if (req.body.adresse != null)     user.adresse = req.body.adresse;
                 if (req.body.newPassword != null) user.password = req.body.newPassword;
-                if (req.body.gps != null) user.gps = req.body.gps;
-                if (req.body.telephone != null) user.telephone = req.body.telephone;
+                if (req.body.gps != null)         user.gps = req.body.gps;
+                if (req.body.telephone != null)   user.telephone = req.body.telephone;
+                
                 if (req.body.GCMid != null && !user.GCMid.contains(req.body.GCMid)) user.GCMid.push(req.body.GCMid);
 
                 return user.save(function(err) {
@@ -306,11 +307,7 @@ module.exports = function(app) {
             
              if(myselfUser.GCMid.contains(req.body.GCMid))
              {
-                //console.log('indexof : ' + myselfUser.GCMid.indexOf(req.body.GCMid));
-                //console.log(myselfUser.GCMid);
                 myselfUser.GCMid.splice(myselfUser.GCMid.indexOf(req.body.GCMid),1);
-                //console.log('----------'); 
-                //console.log(myselfUser.GCMid);
                 myselfUser.save(function(err) {});
                 res.statusCode = 200;
                 return res.send({status:200, message: 'GCMid Removed.'});  

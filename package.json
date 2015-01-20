@@ -9,11 +9,9 @@
   "dependencies": {
     "express": "~4.9.x",
     "mongoose": "*",
-    "pubnub": "*",
     "bcrypt": "*",
     "body-parser": "*",
     "ejs": "*",
-    "polyline": "*",
     "request": "*",
     "node-gcm": "*",
     "node-schedule": "*"

@@ -21,33 +21,33 @@ module.exports = function(app) {
       util       = require('util'),
       gcm        = require('node-gcm');
 
-      sendPush = function (user, dataObject){
+  sendPush = function (user, dataObject){
 
-          // create a message with default values
-          var message = new gcm.Message();
+      // create a message with default values
+      var message = new gcm.Message();
 
-          // or with object values
-          var message = new gcm.Message({
-              //collapseKey: 'demo',
-              delayWhileIdle: true,
-              timeToLive: 3,
-              data: dataObject
+      // or with object values
+      var message = new gcm.Message({
+          //collapseKey: 'demo',
+          delayWhileIdle: true,
+          timeToLive: 3,
+          data: dataObject
+      });
+
+      var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
+      var registrationId = user.GCMid;
+
+      if(registrationId.length)
+      {
+          sender.send(message, registrationId, 4, function (err, result) {
+              console.log(result);
           });
-
-          var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
-          var registrationId = user.GCMid;
-      
-          if(registrationId.length)
-          {
-              sender.send(message, registrationId, 4, function (err, result) {
-                  console.log(result);
-              });
-          }
-          else
-          {
-              console.log('Problem - No GCMid for ' + user.username);
-          }
       }
+      else
+      {
+          console.log('Problem - No GCMid for ' + user.username);
+      }
+  };
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }))
@@ -55,8 +55,8 @@ module.exports = function(app) {
   // parse application/json
   app.use(bodyParser.json())
 
-  var Now   = require('../models/now');
-  var User  = require('../models/user');
+  var Now   = require('../models/now'),
+      User  = require('../models/user');
 
   /**
    * Find and retrieves all nows
@@ -165,9 +165,9 @@ module.exports = function(app) {
             });
 
             if(req.body.hasOwnProperty('titleMessage')) { now.titleMessage = req.body.titleMessage; }
-            if(req.body.hasOwnProperty('radius')) { now.radius = req.body.radius; }
-            if(req.body.hasOwnProperty('rankBy')) { now.rankBy = req.body.rankBy; }
-            if(req.body.hasOwnProperty('type')) { now.type = req.body.type; }
+            if(req.body.hasOwnProperty('radius'))       { now.radius = req.body.radius; }
+            if(req.body.hasOwnProperty('rankBy'))       { now.rankBy = req.body.rankBy; }
+            if(req.body.hasOwnProperty('type'))         { now.type = req.body.type; }
 
             now.save(function(err) {
 
@@ -181,13 +181,10 @@ module.exports = function(app) {
 
                 console.log("Now created");
                 res.statusCode = 200;
-                //push.sendPush(now.guest, {});
-
-
+                
                 User.findOne({username:now.guest}, function(err,user) {
                   sendPush(user, {type: "NOW_INVITATION" , now: now});
                 });
-
 
                 var schedule = require('node-schedule');
                 var date_in_15_min = new Date(Date.now() + 15 * 60000);
@@ -278,9 +275,8 @@ module.exports = function(app) {
 
                 // we dont want the user to update its username right ?
 
-
                 if(req.body.hasOwnProperty('responseMessage')) now.responseMessage = req.body.responseMessage;
-                if(req.body.hasOwnProperty('guestStatus'))  now.guestStatus = req.body.guestStatus;
+                if(req.body.hasOwnProperty('guestStatus'))     now.guestStatus = req.body.guestStatus;
                 if(req.body.hasOwnProperty('travelMode'))  
                 {
                   if(now.travelMode == "TRANSIT" || req.body.travelMode == "TRANSIT")
@@ -298,11 +294,9 @@ module.exports = function(app) {
                   User.findOne({username:now.owner}, function(err,user) {
                     sendPush(user, {type: "NOW_CANCELLED" , now: now});
                   });
-                  /*User.findOne({username:now.guest}, function(err,user) {
-                    sendPush(user, {type: "NOW_CANCELLED" , now: now});
-                  });*/
                 }
-                else {
+                else 
+                {
                   if(req.body.hasOwnProperty('latGuest'))        now.latGuest = req.body.latGuest;           
                   if(req.body.hasOwnProperty('lonGuest'))        now.lonGuest = req.body.lonGuest;
 
@@ -340,9 +334,6 @@ module.exports = function(app) {
                     }
                     console.log('Internal error(%d): %s',res.statusCode,err.message);
                   }
-                  //res.statusCode = 200
-                  //res.send(event);
-
                 });
               });
 
@@ -423,6 +414,7 @@ function calculateDestination( nowObject, req, res ){
 
         var requestString = util.format('https://maps.googleapis.com/maps/api/directions/json?origin=%d,%d&destination=%d,%d&mode=%s', nowObject.latOwner, nowObject.lonOwner, nowObject.latGuest, nowObject.lonGuest, travelMode);
         console.log(requestString);
+        
         /* Value used for calculation */
         var totalDist           = -1, // get the total distance (meter) between origin and destination, from google json result
             resJSON             = {}, // JSON object from google request
@@ -527,6 +519,7 @@ function calculateDestination( nowObject, req, res ){
               } // if nowObject.type = "none"
               else
               {
+                // KEEP THE KEY PRIVATE PLEASE (Hugo)
                 var apiKey         = "AIzaSyDlKaDgFHRsl6TbqSa9bYxspYwVCaZb_XM";
                 var radiusOrRankBy = "&radius="+nowObject.radius;
                 
@@ -537,7 +530,7 @@ function calculateDestination( nowObject, req, res ){
 
                 rqst(urlRequest, function (err, response, body) {
                   if (!err && response.statusCode == 200) {
-                    //console.log(JSON.parse(body).results[0]);
+                    
                     nowObject.placesAround = JSON.parse(body).results[0];
                     nowObject.eventStatus = 1;
 
@@ -548,7 +541,7 @@ function calculateDestination( nowObject, req, res ){
                          console.log("Places and middlePoint saved");
                          if(req != null && res !=null)
                          {
-                           //findOneNow(req, res);
+                           // NEXT VERSION : Quality first, THEN distance
                            /*if(nowObject.placesAround == [])
                            {
                              nowObject.rankby = "DISTANCE";
@@ -591,13 +584,6 @@ function calculateDestination( nowObject, req, res ){
                    console.log("Places and middlePoint saved");
                    if(req != null && res !=null)
                    {
-                     //findOneNow(req, res);
-                     /*if(nowObject.placesAround == [])
-                     {
-                       nowObject.rankby = "DISTANCE";
-                       nowObject.save();
-                       calculateDestination(nowObject, req, res);
-                     }*/
                      User.findOne({username:nowObject.owner}, function(err,user) {
                        sendPush(user, {type: "PLACE_ERROR" , now: nowObject});
                      });
@@ -626,13 +612,9 @@ function calculateDestination( nowObject, req, res ){
 
   //Link routes and actions
   app.post('/nows', findAllNows);
-  // dont forget to change :username by :id if we switch in the fonction 
   app.post('/now/show/:id', findOneNow);
   app.post('/now', addNow);
-  // dont forget to change :username by :id if we switch in the fonction 
-  app.put('/now/:id', updateNow);
   app.post('/now/accept/:id', acceptNow);
   app.post('/now/refuse/:id', refuseNow);
-  // dont forget to change :username by :id if we switch in the fonction 
   app.delete('/now/:id', deleteNow);
 }

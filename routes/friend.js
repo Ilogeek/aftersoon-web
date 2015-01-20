@@ -13,7 +13,7 @@
          }
      }
      return false;
- }
+ };
 
 
 module.exports = function(app) {
@@ -22,33 +22,33 @@ module.exports = function(app) {
       bodyParser = require('body-parser'),
       gcm        = require('node-gcm');
 
-      sendPush = function (user, dataObject){
+  sendPush = function (user, dataObject){
 
-          // create a message with default values
-          var message = new gcm.Message();
+      // create a message with default values
+      var message = new gcm.Message();
 
-          // or with object values
-          var message = new gcm.Message({
-              //collapseKey: 'demo',
-              delayWhileIdle: true,
-              timeToLive: 3,
-              data: dataObject
+      // or with object values
+      var message = new gcm.Message({
+          //collapseKey: 'demo',
+          delayWhileIdle: true,
+          timeToLive: 3,
+          data: dataObject
+      });
+
+      var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
+      var registrationId = user.GCMid;
+  
+      if(registrationId.length)
+      {
+          sender.send(message, registrationId, 4, function (err, result) {
+              console.log(result);
           });
-
-          var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
-          var registrationId = user.GCMid;
-      
-          if(registrationId.length)
-          {
-              sender.send(message, registrationId, 4, function (err, result) {
-                  console.log(result);
-              });
-          }
-          else
-          {
-              console.log('Problem - No GCMid for ' + user.username);
-          }
       }
+      else
+      {
+          console.log('Problem - No GCMid for ' + user.username);
+      }
+  };
 
   // parse application/x-www-form-urlencoded
   app.use(bodyParser.urlencoded({ extended: false }))
@@ -94,7 +94,9 @@ module.exports = function(app) {
               {
                 
                 myselfUser.askedToBeFriend.push(user.username);
+                myselfUser.askedToBeFriend = myselfUser.askedToBeFriend.sort();
                 user.requestFrom.push(myselfUser.username);
+                user.requestFrom = user.requestFrom.sort();
 
                 myselfUser.save(function(err) {
                   console.log(err);
@@ -111,7 +113,7 @@ module.exports = function(app) {
                         });
 
                         return res.send({ status: 200, user:myselfUser });
-                        // TODO : SEND PUSH TO THE OTHER USER 
+                        
                       } else {
                         if(err2.name == 'ValidationError') {
                           res.statusCode = 400;
@@ -191,7 +193,9 @@ module.exports = function(app) {
               {
                 
                 myselfUser.askedToBeFriend.push(user.username);
+                myselfUser.askedToBeFriend = myselfUser.askedToBeFriend.sort();
                 user.requestFrom.push(myselfUser.username);
+                user.requestFrom = user.requestFrom.sort();
 
                 myselfUser.save(function(err) {
                   console.log(err);
@@ -264,10 +268,7 @@ module.exports = function(app) {
         
         // login was successful if we have a user
         if (myselfUser) {
-
-         
-
-           
+  
               if(!myselfUser.requestFrom.contains(req.params.username))
               {
                 res.statusCode = 400;
@@ -278,10 +279,14 @@ module.exports = function(app) {
                 return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
 
                   myselfUser.requestFrom.splice(myselfUser.requestFrom.indexOf(req.params.username.toLowerCase()), 1);
+                  myselfUser.requestFrom = myselfUser.requestFrom.sort();
                   myselfUser.friends.push(req.params.username.toLowerCase());
+                  myselfUser.friends = myselfUser.friends.sort();
                   
                   user.askedToBeFriend.splice(user.askedToBeFriend.indexOf(myselfUser.username),1);
-                  user.friends.push(myselfUser.username)
+                  user.askedToBeFriend = user.askedToBeFriend.sort();
+                  user.friends.push(myselfUser.username);
+                  user.friends = user.friends.sort();
 
                   myselfUser.save(function(err) {
                     console.log(err);
@@ -349,9 +354,6 @@ module.exports = function(app) {
         // login was successful if we have a user
         if (myselfUser) {
 
-         
-
-           
               if(!myselfUser.requestFrom.contains(req.params.username.toLowerCase()))
               {
                 res.statusCode = 400;
@@ -362,10 +364,13 @@ module.exports = function(app) {
                 return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
 
                   myselfUser.requestFrom.splice(myselfUser.requestFrom.indexOf(req.params.username.toLowerCase()), 1);
+                  myselfUser.requestFrom = myselfUser.requestFrom.sort();
                   //myselfUser.friends.push(req.params.username);
                   
                   user.askedToBeFriend.splice(user.askedToBeFriend.indexOf(myselfUser.username),1);
-                  user.bannedBy.push(myselfUser.username)
+                  user.askedToBeFriend = user.askedToBeFriend.sort();
+                  user.bannedBy.push(myselfUser.username);
+                  user.bannedBy = user.bannedBy.sort();
 
                   myselfUser.save(function(err) {
                     console.log(err);
@@ -425,9 +430,6 @@ module.exports = function(app) {
         
         // login was successful if we have a user
         if (myselfUser) {
-
-         
-
            
               if(!myselfUser.friends.contains(req.params.username.toLowerCase()))
               {
@@ -439,7 +441,9 @@ module.exports = function(app) {
                 return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
 
                   myselfUser.friends.splice(myselfUser.friends.indexOf(req.params.username.toLowerCase()), 1);
+                  myselfUser.friends = myselfUser.friends.sort();
                   user.friends.splice(user.friends.indexOf(myselfUser.username),1);
+                  user.friends = user.friends.sort();
 
                   myselfUser.save(function(err) {
                     console.log(err);
