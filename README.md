@@ -13,6 +13,7 @@
     + /friend
     + /now
 3. RECHERCHE : Calcul des trajets
+4. RECHERCHE : Notifications Push
 4. Essais avec Postman
 
 ## Models

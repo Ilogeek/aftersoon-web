@@ -479,19 +479,33 @@ function calculateDestination( nowObject, req, res ){
                }
 
               //return middlePoint;
+              if(nowObject.type == "none"){
 
-              var apiKey         = "AIzaSyDlKaDgFHRsl6TbqSa9bYxspYwVCaZb_XM";
-              var radiusOrRankBy = "&radius="+nowObject.radius;
-              
-              if(nowObject.rankBy == "DISTANCE") radiusOrRankBy = "&rankby=distance";
-              radiusOrRankBy = "&rankby=distance";
-              
-              var urlRequest = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ nowObject.latMiddlePoint +","+ nowObject.lonMiddlePoint + radiusOrRankBy+"&types="+ nowObject.type +"&key="+apiKey//+"&opennow=yes";
+                  var middlePointPlace = [
+                      {
+                          "vicinity": "Meet us here !",
+                          "types": [
+                              "none"
+                          ],
+                          "scope": "GOOGLE",
+                          "reference": "-1",
+                          "place_id": "-1",
+                          "opening_hours": {
+                              "weekday_text": [],
+                              "open_now": true
+                          },
+                          "name": "Meeting point",
+                          "id": "-1",
+                          "geometry": {
+                              "location": {
+                                  "lng": nowObject.lonMiddlePoint,
+                                  "lat": nowObject.latMiddlePoint
+                              }
+                          }
+                      }
+                  ];
 
-              rqst(urlRequest, function (err, response, body) {
-                if (!err && response.statusCode == 200) {
-                  //console.log(JSON.parse(body).results[0]);
-                  nowObject.placesAround = JSON.parse(body).results[0];
+                  nowObject.placesAround = middlePointPlace;
                   nowObject.eventStatus = 1;
 
                   nowObject.save(function(err) {
@@ -501,13 +515,6 @@ function calculateDestination( nowObject, req, res ){
                        console.log("Places and middlePoint saved");
                        if(req != null && res !=null)
                        {
-                         //findOneNow(req, res);
-                         /*if(nowObject.placesAround == [])
-                         {
-                           nowObject.rankby = "DISTANCE";
-                           nowObject.save();
-                           calculateDestination(nowObject, req, res);
-                         }*/
                          User.findOne({username:nowObject.owner}, function(err,user) {
                            sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
                          });
@@ -517,14 +524,56 @@ function calculateDestination( nowObject, req, res ){
                        }
                      }
                    });
+              } // if nowObject.type = "none"
+              else
+              {
+                var apiKey         = "AIzaSyDlKaDgFHRsl6TbqSa9bYxspYwVCaZb_XM";
+                var radiusOrRankBy = "&radius="+nowObject.radius;
+                
+                if(nowObject.rankBy == "DISTANCE") radiusOrRankBy = "&rankby=distance";
+                radiusOrRankBy = "&rankby=distance";
+                
+                var urlRequest = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ nowObject.latMiddlePoint +","+ nowObject.lonMiddlePoint + radiusOrRankBy+"&types="+ nowObject.type +"&key="+apiKey//+"&opennow=yes";
 
-                }
-                else {
+                rqst(urlRequest, function (err, response, body) {
+                  if (!err && response.statusCode == 200) {
+                    //console.log(JSON.parse(body).results[0]);
+                    nowObject.placesAround = JSON.parse(body).results[0];
+                    nowObject.eventStatus = 1;
 
-                  console.log('getPlacesAround - Connection problem');
-               
-                }
-              });
+                    nowObject.save(function(err) {
+                       if(err) {
+                         console.log('Error while saving now : ' + err);
+                       } else {
+                         console.log("Places and middlePoint saved");
+                         if(req != null && res !=null)
+                         {
+                           //findOneNow(req, res);
+                           /*if(nowObject.placesAround == [])
+                           {
+                             nowObject.rankby = "DISTANCE";
+                             nowObject.save();
+                             calculateDestination(nowObject, req, res);
+                           }*/
+                           User.findOne({username:nowObject.owner}, function(err,user) {
+                             sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                           });
+                           User.findOne({username:nowObject.guest}, function(err,user) {
+                             sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                           });
+                         }
+                       }
+                     });
+
+                  }
+                  else {
+
+                    console.log('getPlacesAround - Connection problem');
+                 
+                  }
+                });
+              } // end else if nowObject.type = "none"
+              
             } // if JSON.parse(body).status == 'OK'
             else
             {

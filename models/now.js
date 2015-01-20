@@ -19,7 +19,7 @@ var NowSchema = new Schema({
     lonGuest           : {type: Number, default:0},
     latMiddlePoint     : {type: Number, default:0},
     lonMiddlePoint     : {type: Number, default:0},
-    type               : {type: String, enum: ['bar', 'cafe', 'library', 'movie_theater', 'museum', 'night_club', 'parking', 'restaurant', 'subway_station', 'none'], default: 'bar'},
+    type               : {type: String, enum: ['bar', 'cafe', 'library', 'movie_theater', 'museum', 'night_club', 'parking', 'restaurant', 'subway_station', 'none'], default: 'none'},
     // Type from https://developers.google.com/places/documentation/supported_types
     placesAround       : {type: Array,  default:[]},
     version            : {type: Number, default:1},
