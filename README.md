@@ -14,7 +14,7 @@
     + /now
 3. RECHERCHE : Calcul des trajets
 4. RECHERCHE : Notifications Push
-4. Essais avec Postman
+5. Essais avec Postman
 
 ## Models
 ### Utilisateurs
@@ -212,6 +212,47 @@ DistanceDebutEtape             Milieu Trajet            DistanceFinEtape
 En effet, sur des grandes étapes, nous pouvons admettre que la disposition des différentes coordonnées GPS du polyline sont placées de façon continue et régulière (loi des grands nombres et probabilité). Pour des petites étapes, même si cette disposition est moins bien respectée, l'impact est négligeable de par la petite distance.
 Avec cette solution nous pouvons obtenir des résultats très convaincants pour le milieu d'un trajet (de plus le rayon de recherche d'un établissement effacera également les disparités avec le vrai milieu du trajet).
 - Une fois le milieu obtenu, nous formons une URL qui ira chercher un objet JSON via l'API google places.
+
+## RECHERCHE : Notifications Push
+
+Un des défis techniques consiste en la communication en temps réel entre le serveur web et l'application Android. L'objectif est de rendre notre application la plus réactive possible (nécessaire vu le projet) et d'ajouter de l'interractivité pour les utilisateurs.
+
+### Chronologie de notre recherche
+
+- Appel au serveur à un intervalle régulier par l'application Android
+- Recherche de documentations sur les solutions proposées par Heroku (Pubnub)
+- Recherche de documentations sur la solution de Google (GCM)
+
+#### Appel au serveur à un intervalle régulier par l'application Android
+
+Dans un premier temps, n'ayant aucune expérience dans le domaine, nous imaginions que le serveur appelle une page du serveur listant les nouveautés depuis son dernier passage.
+Plusieurs problèmes apparaissaient alors :
+- Cette solution nécessite que l'application reste tout le temps en marche
+- Cette solution est énergivore pour la batterie du téléphone puisqu'une action est effectuée de façon répétée (une fois par 30 sec au grand maximum pour avoir un semblant de réactivité)
+- La gestion des nouveautés à afficher côté serveur était complexe (mise en place d'un genre de flux pour chaque personne, des appels à la BDD de façon récurrente)
+
+Nous avons très vite abandonné l'idée d'utiliser cette solution qui semblait être la plus simple au premier abord.
+
+#### Recherche de documentations sur les solutions proposées par Heroku (Pubnub)
+
+Heroku propose plusieurs plugins à ajouter à son serveur. Ces solutions permettent de communiquer facilement en temps réel avec le serveur et l'application côté client. Pour beaucoup il s'agit de requetes AJAX. 
+Pubnub se rapprochaient le plus de nos besoins. Néanmoins sa documentation et ses exemples rendaient son implémentation difficile.
+
+#### Recherche de documentations sur la solution de Google (GCM) et implémentation
+
+Google propose un service qui permet de communiquer entre un serveur et un appareil Android grâce au Google Cloud Messaging (GCM). En utilisant cette solution, le serveur se voit allouer un ID unique et privé qui lui permet d'entrer en contact avec les serveurs Google. 
+En parallèle, lors de la connexion d'un utilisateur à notre application, nous récupérons son GCM id user unique. Celui-ci est alors stocké dans notre base de données et servira à communiquer avec lui via des notifications push.
+La gestion des GCM id user est géré à la connexion et la déconnexion d'un utilisateur (gestion de plusieurs appareils connectés en même temps à l'application par exemple).
+Lors d'événements précis, notre serveur est donc capable de transmettre à Google que nous souhaitons envoyer un message à un utilisateur unique. Nous le faisons lors de plusieurs événements précis côté serveur :
+-FRIEND\_INVITATION\_ASKED
+-FRIEND\_INVITATION\_ACCEPTED
+-NOW\_INVITATION (quelqu'un m'a invité)
+-NOW\_REMINDER\_NO\_ANSWER (push envoyé au guest car il n’a pas repondu au bout de 5min)
+-NOW\_NO\_ANSWER\_FROM\_GUEST (push envoyé aux 2, comme pas de réponse : event annulé)
+-NOW\_CANCELLED (push envoyé à l’owner car le guest a dit non)
+-PLACE\_FOUND (place trouvée)
+-PLACE\_ERROR (place non trouvée car une des coordonnées ou le calcul ne fonctionne pas)
+
 
 ## Essais avec Postman
 Aperçu disponible sur [http://aftersoon.herokuapp.com](http://aftersoon.heroku.com)
