@@ -93,8 +93,8 @@ module.exports = function(app) {
               else
               {
                 
-                myselfUser.askedToBeFriend.push(user.username);
-                user.requestFrom.push(myselfUser.username);
+                myselfUser.askedToBeFriend.push(user.username).sort();
+                user.requestFrom.push(myselfUser.username).sort();
 
                 myselfUser.save(function(err) {
                   console.log(err);
@@ -190,8 +190,8 @@ module.exports = function(app) {
               else
               {
                 
-                myselfUser.askedToBeFriend.push(user.username);
-                user.requestFrom.push(myselfUser.username);
+                myselfUser.askedToBeFriend.push(user.username).sort();
+                user.requestFrom.push(myselfUser.username).sort();
 
                 myselfUser.save(function(err) {
                   console.log(err);
@@ -277,11 +277,11 @@ module.exports = function(app) {
               {
                 return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
 
-                  myselfUser.requestFrom.splice(myselfUser.requestFrom.indexOf(req.params.username.toLowerCase()), 1);
-                  myselfUser.friends.push(req.params.username.toLowerCase());
+                  myselfUser.requestFrom.splice(myselfUser.requestFrom.indexOf(req.params.username.toLowerCase()), 1).sort();
+                  myselfUser.friends.push(req.params.username.toLowerCase()).sort();
                   
-                  user.askedToBeFriend.splice(user.askedToBeFriend.indexOf(myselfUser.username),1);
-                  user.friends.push(myselfUser.username)
+                  user.askedToBeFriend.splice(user.askedToBeFriend.indexOf(myselfUser.username),1).sort();
+                  user.friends.push(myselfUser.username).sort();
 
                   myselfUser.save(function(err) {
                     console.log(err);
@@ -361,11 +361,11 @@ module.exports = function(app) {
               {
                 return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
 
-                  myselfUser.requestFrom.splice(myselfUser.requestFrom.indexOf(req.params.username.toLowerCase()), 1);
+                  myselfUser.requestFrom.splice(myselfUser.requestFrom.indexOf(req.params.username.toLowerCase()), 1).sort();
                   //myselfUser.friends.push(req.params.username);
                   
-                  user.askedToBeFriend.splice(user.askedToBeFriend.indexOf(myselfUser.username),1);
-                  user.bannedBy.push(myselfUser.username)
+                  user.askedToBeFriend.splice(user.askedToBeFriend.indexOf(myselfUser.username),1).sort();
+                  user.bannedBy.push(myselfUser.username).sort();
 
                   myselfUser.save(function(err) {
                     console.log(err);
@@ -438,8 +438,8 @@ module.exports = function(app) {
               {
                 return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
 
-                  myselfUser.friends.splice(myselfUser.friends.indexOf(req.params.username.toLowerCase()), 1);
-                  user.friends.splice(user.friends.indexOf(myselfUser.username),1);
+                  myselfUser.friends.splice(myselfUser.friends.indexOf(req.params.username.toLowerCase()), 1).sort();
+                  user.friends.splice(user.friends.indexOf(myselfUser.username),1).sort();
 
                   myselfUser.save(function(err) {
                     console.log(err);
