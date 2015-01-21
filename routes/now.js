@@ -65,7 +65,9 @@ module.exports = function(app) {
    */
   findAllNows = function(req, res) {
     console.log("POST - /nows");
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -100,7 +102,8 @@ module.exports = function(app) {
    */
   findOneNow = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -144,7 +147,8 @@ module.exports = function(app) {
    */
   addNow = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was failure
@@ -153,89 +157,95 @@ module.exports = function(app) {
             console.log('POST - /now');
             //console.log(req.is('json'));
             //console.log(req.body);
-
-            var now = new Now({
-                travelMode: req.body.travelMode,
-                date: Date.now(),
-                owner: myselfUser.username,
-                guest: req.body.guest.toLowerCase(),
-                latOwner: req.body.latOwner,
-                lonOwner: req.body.lonOwner,
-                version : 1
-            });
-
-            if(req.body.hasOwnProperty('titleMessage')) { now.titleMessage = req.body.titleMessage; }
-            if(req.body.hasOwnProperty('radius'))       { now.radius = req.body.radius; }
-            if(req.body.hasOwnProperty('rankBy'))       { now.rankBy = req.body.rankBy; }
-            if(req.body.hasOwnProperty('type'))         { now.type = req.body.type; }
-
-            now.save(function(err) {
-
-              if(err) {
-
-                console.log('Error while saving now : ' + err);
-                res.statusCode = 500;
-                return res.send({ stauts : 500, error: err });
-
-              } else {
-
-                console.log("Now created");
-                res.statusCode = 200;
-                
-                User.findOne({username:now.guest}, function(err,user) {
-                  sendPush(user, {type: "NOW_INVITATION" , now: now});
+            if(req.body.travelMode != null && req.body.guest != null && req.body.latOwner != null && req.body.lonOwner != null)
+            {
+                var now = new Now({
+                    travelMode: req.body.travelMode,
+                    date: Date.now(),
+                    owner: myselfUser.username,
+                    guest: req.body.guest.toLowerCase(),
+                    latOwner: req.body.latOwner,
+                    lonOwner: req.body.lonOwner,
+                    version : 1
                 });
 
-                var schedule = require('node-schedule');
-                var date_in_15_min = new Date(Date.now() + 15 * 60000);
-                var date_in_5_min  = new Date(Date.now() + 5  * 60000);
+                if(req.body.hasOwnProperty('titleMessage')) { now.titleMessage = req.body.titleMessage; }
+                if(req.body.hasOwnProperty('radius'))       { now.radius = req.body.radius; }
+                if(req.body.hasOwnProperty('rankBy'))       { now.rankBy = req.body.rankBy; }
+                if(req.body.hasOwnProperty('type'))         { now.type = req.body.type; }
 
-                var reminder = schedule.scheduleJob(date_in_5_min, function(){
-                    Now.findById(now._id, function(err, now) {
-                        if(now) {
-                          if(now.guestStatus == 0)
-                          {
-                            
-                                User.findOne({username:now.guest}, function(err,user) {
-                                  sendPush(user, {type: "NOW_REMINDER_NO_ANSWER" , now: now});
-                                });
-                                console.log('Reminder - No answer from guest');
-                          }
-                        }
+                now.save(function(err) {
+
+                  if(err) {
+
+                    console.log('Error while saving now : ' + err);
+                    res.statusCode = 500;
+                    return res.send({ stauts : 500, error: err });
+
+                  } else {
+
+                    console.log("Now created");
+                    res.statusCode = 200;
+                    
+                    User.findOne({username:now.guest}, function(err,user) {
+                      sendPush(user, {type: "NOW_INVITATION" , now: now});
                     });
-                });
 
-                var cancelled = schedule.scheduleJob(date_in_15_min, function(){
-                    Now.findById(now._id, function(err, now) {
-                        if(now) {
-                          if(now.guestStatus == 0)
-                          {
-                            now.eventStatus = 2;
-                            now.save(function(err) {
-                              if(!err) {
-                                User.findOne({username:now.owner}, function(err,user) {
-                                  sendPush(user, {type: "NOW_NO_ANSWER_FROM_GUEST" , now: now});
-                                });
-                                User.findOne({username:now.guest}, function(err,user) {
-                                  sendPush(user, {type: "NOW_NO_ANSWER_FROM_GUEST" , now: now});
-                                });
-                                console.log('Now cancelled - No answer from guest');
+                    var schedule = require('node-schedule');
+                    var date_in_15_min = new Date(Date.now() + 15 * 60000);
+                    var date_in_5_min  = new Date(Date.now() + 5  * 60000);
+
+                    var reminder = schedule.scheduleJob(date_in_5_min, function(){
+                        Now.findById(now._id, function(err, now) {
+                            if(now) {
+                              if(now.guestStatus == 0)
+                              {
+                                
+                                    User.findOne({username:now.guest}, function(err,user) {
+                                      sendPush(user, {type: "NOW_REMINDER_NO_ANSWER" , now: now});
+                                    });
+                                    console.log('Reminder - No answer from guest');
                               }
-                            });
-                          }
-                        }
+                            }
+                        });
                     });
-         
+
+                    var cancelled = schedule.scheduleJob(date_in_15_min, function(){
+                        Now.findById(now._id, function(err, now) {
+                            if(now) {
+                              if(now.guestStatus == 0)
+                              {
+                                now.eventStatus = 2;
+                                now.save(function(err) {
+                                  if(!err) {
+                                    User.findOne({username:now.owner}, function(err,user) {
+                                      sendPush(user, {type: "NOW_NO_ANSWER_FROM_GUEST" , now: now});
+                                    });
+                                    User.findOne({username:now.guest}, function(err,user) {
+                                      sendPush(user, {type: "NOW_NO_ANSWER_FROM_GUEST" , now: now});
+                                    });
+                                    console.log('Now cancelled - No answer from guest');
+                                  }
+                                });
+                              }
+                            }
+                        });
+                
+                    });
+                  
+                    res.statusCode = 200;
+                    return res.send({ status: 200, now:now });
+
+                  }
+
                 });
-              
-                return res.send({ status: 200, now:now });
-
-              }
-
-            });
-
-
-
+            }
+            else
+            {
+                res.statusCode = 400;
+                return res.send({status: 400, message: 'Missing data.'});
+            }
+          
       }
       else {
         res.statusCode = 403;
@@ -258,7 +268,8 @@ module.exports = function(app) {
     req.body.guestStatus = acceptedOrNot;
     if (req.body.guestStatus == 0) req.body.guestStatus +=2;
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -356,7 +367,8 @@ module.exports = function(app) {
    */
   deleteNow = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user

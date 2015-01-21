@@ -40,7 +40,7 @@ var Event        = require('./models/event'),
 
 // Root
  app.get('/', function(request, response) {
-   response.send('<h1>Aftersoon</h1><p>An experimental project made by <a href="http://www.aernewein.eu">Antoine Ernewein</a>, <a href="http://steve.benedick.fr">Steve Benedick</a>, Etienne Heitz & <a href="http://hzilliox.fr">Hugo Zilliox</a></p>');
+   response.send('<h1>Aftersoon</h1><p>An experimental project made by <a href="http://www.aernewein.eu">Antoine Ernewein</a>, <a href="http://steve.benedick.fr">Steve Benedick</a>, Etienne Heitz & <a href="http://hzilliox.fr">Hugo Zilliox</a></p><h2>If you see this page it means that the webservice is alive</h2><br/><img src="http://www.emojibase.com/resources/img/emojis/hangouts/1f419.png" />');
  });
 
 

@@ -33,7 +33,8 @@ module.exports = function(app) {
    */
   findAllUsers = function(req, res) {
     console.log("POST - /users");
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase();}
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -68,7 +69,8 @@ module.exports = function(app) {
    */
   findOneUser = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase();}
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -126,34 +128,41 @@ module.exports = function(app) {
             console.log('POST - /user');
             console.log(req.is('json'));
             console.log(req.body);
+           if(req.body.email != null && req.body.password != null && req.body.username != null && req.body.GCMid != null)
+           {
+              var user = new User({
+                  email    : req.body.email,
+                  password : req.body.password,
+                  username : req.body.username.toLowerCase(),
+                  //adresse  : req.body.adresse,
+                  GCMid    : req.body.GCMid
+              });
 
-            var user = new User({
-                email    : req.body.email,
-                password : req.body.password,
-                username : req.body.username.toLowerCase(),
-                adresse  : req.body.adresse,
-                GCMid    : req.body.GCMid
-            });
+              if (req.body.gps != null)       user.gps       = req.body.gps;
+              if (req.body.telephone != null) user.telephone = req.body.telephone;
 
-            if (req.body.gps != null)       user.gps       = req.body.gps;
-            if (req.body.telephone != null) user.telephone = req.body.telephone;
+              user.save(function(err) {
 
-            user.save(function(err) {
+                if(err) {
+                  res.statusCode = 400;
+                  console.log('Error while saving user : ' + err);
+                  res.send({status:400, message:err });
+                  return;
 
-              if(err) {
-                res.statusCode = 400;
-                console.log('Error while saving user : ' + err);
-                res.send({status:400, message:err });
-                return;
+                } else {
+                  res.statusCode = 200;
+                  console.log("User created");
+                  return res.send({ status: 200, user:user });
 
-              } else {
-                res.statusCode = 200;
-                console.log("User created");
-                return res.send({ status: 200, user:user });
+                }
 
-              }
-
-            });
+              });
+           }
+           else
+           {
+              res.statusCode = 400;
+              return res.send({status:400, message: 'Data missing'});
+           }
 
 
 
@@ -176,7 +185,8 @@ module.exports = function(app) {
   updateUser = function(req, res) {
 
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -184,7 +194,7 @@ module.exports = function(app) {
 
               //Solution by Username which is unique so its like an ID
               console.log("PUT - /user");
-              return User.findOne({username:req.body.myUsername.toLowerCase()}, function(err,user) {
+              return User.findOne({username:req.body.myUsername}, function(err,user) {
               
               // Solution by ID
               //console.log("PUT - /user/:id");
@@ -244,7 +254,8 @@ module.exports = function(app) {
    */
   deleteUser = function(req, res) {
 
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -296,7 +307,9 @@ module.exports = function(app) {
   }
 
   function deleteThisGCMid(req, res){
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
@@ -322,7 +335,9 @@ module.exports = function(app) {
   }
 
   function addThisGCMid(req, res){
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    
+      if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+      User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user

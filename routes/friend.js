@@ -64,14 +64,14 @@ module.exports = function(app) {
    */
   addFriend = function(req, res) {
     console.log("POST - /friend/add/:username");
-    req.body.myUsername = req.body.myUsername.toLowerCase();
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
         if (myselfUser) {
 
-         return User.findOne({username:req.params.username.toLowerCase()}, function(err,user) {
+         return User.findOne({username:req.params.username}, function(err,user) {
                    
            if(!user) {
              res.statusCode = 400;
@@ -163,7 +163,7 @@ module.exports = function(app) {
    */
   addFriendEmail = function(req, res) {
     console.log("POST - /friend/add/email/:email");
-    req.body.myUsername = req.body.myUsername.toLowerCase();
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
@@ -262,7 +262,7 @@ module.exports = function(app) {
    */
   acceptFriend = function(req, res) {
     console.log("POST - /friend/accept/:username");
-    req.body.myUsername = req.body.myUsername.toLowerCase();
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
@@ -347,7 +347,7 @@ module.exports = function(app) {
    */
   refuseFriend = function(req, res) {
     console.log("POST - /friend/refuse/:username");
-    req.body.myUsername = req.body.myUsername.toLowerCase();
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
     User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
@@ -425,7 +425,8 @@ module.exports = function(app) {
    */
   removeFriend = function(req, res) {
     console.log("POST - /friend/remove/:username");
-    User.getAuthenticated(req.body.myUsername.toLowerCase(), req.body.myPassword, function(err, myselfUser, reason) {
+    if(req.body.myUsername != null) { req.body.myUsername = req.body.myUsername.toLowerCase(); }
+    User.getAuthenticated(req.body.myUsername, req.body.myPassword, function(err, myselfUser, reason) {
         if (err) throw err;
         
         // login was successful if we have a user
