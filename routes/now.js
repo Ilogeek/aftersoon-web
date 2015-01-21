@@ -603,8 +603,7 @@ function calculateDestination( nowObject, req, res ){
 
           }
         });
-    
-    
+
   } // END IF
 };
 
