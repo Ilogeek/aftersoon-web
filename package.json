@@ -14,7 +14,8 @@
     "ejs": "*",
     "request": "*",
     "node-gcm": "*",
-    "node-schedule": "*"
+    "node-schedule": "*",
+    "polyline": "*"
   },
   "engines": {
     "node": "0.10.x"
