@@ -17,6 +17,7 @@ app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
 }) ;
 
+// HIDE THE CONNECTION URL IF PUBLIC ON GITHUB !
 var connStr = process.env.MONGOLAB_URI || 'mongodb://heroku_app31738690:pqegvskn398qo6nb5olr5fdfar@ds053130.mongolab.com:53130/heroku_app31738690';
 mongoose.connect(connStr, function(err) {
     if (err) throw err;

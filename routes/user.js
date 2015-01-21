@@ -128,14 +128,12 @@ module.exports = function(app) {
             console.log('POST - /user');
             console.log(req.is('json'));
             console.log(req.body);
-           if(req.body.email != null && req.body.password != null && req.body.username != null && req.body.GCMid != null)
+           if(req.body.email != null && req.body.password != null && req.body.username != null)
            {
               var user = new User({
                   email    : req.body.email,
                   password : req.body.password,
-                  username : req.body.username.toLowerCase(),
-                  //adresse  : req.body.adresse,
-                  GCMid    : req.body.GCMid
+                  username : req.body.username.toLowerCase()
               });
 
               if (req.body.gps != null)       user.gps       = req.body.gps;
