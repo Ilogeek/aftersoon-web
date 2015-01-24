@@ -74,7 +74,7 @@ module.exports = function(app) {
         if (myselfUser) {
 
             // function findAllNows
-            return Now.find({$or:[ {'owner':myselfUser.username}, {'guest':myselfUser.username} ]}, function(err, nows) {
+            return Now.find({$or:[ {'owner':myselfUser.username}, {'guest':myselfUser.username} ]}, null, {sort: {date: -1}}, function(err, nows) {
               if(!err) {
                 res.statusCode = 200;
                 return res.send({status:200, nows:nows});
@@ -443,13 +443,13 @@ function calculateDestination( nowObject, req, res ){
 
         rqst(requestString, function (err, response, body) {
           if (!err && response.statusCode == 200) {
-            /*
+            
             console.log(JSON.parse(body));
             console.log('-------------------------');
             console.log(JSON.parse(body).status);
             console.log('-------------------------');
-            console.log(JSON.parse(body).routes[0].legs[0].distance); 
-            */
+            //console.log(JSON.parse(body).routes[0].legs[0].distance); 
+            
             if(JSON.parse(body).status == 'OK')
             {
                // Avoid bug when people are at the same place
@@ -483,8 +483,8 @@ function calculateDestination( nowObject, req, res ){
                }
 
               //return middlePoint;
-              if(nowObject.type == "none"){
-
+              if(nowObject.type == "none")
+              {
                   var middlePointPlace = [
                       {
                           "vicinity": "Meet us here !",
@@ -536,9 +536,11 @@ function calculateDestination( nowObject, req, res ){
                 var radiusOrRankBy = "&radius="+nowObject.radius;
                 
                 if(nowObject.rankBy == "DISTANCE") radiusOrRankBy = "&rankby=distance";
-                radiusOrRankBy = "&rankby=distance";
+                // NEXT VERSION : QUALITY first, THEN distance
+                // radiusOrRankBy = "&rankby=distance";
                 
                 var urlRequest = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+ nowObject.latMiddlePoint +","+ nowObject.lonMiddlePoint + radiusOrRankBy+"&types="+ nowObject.type +"&key="+apiKey//+"&opennow=yes";
+                console.log(urlRequest);
 
                 rqst(urlRequest, function (err, response, body) {
                   if (!err && response.statusCode == 200) {
@@ -546,29 +548,36 @@ function calculateDestination( nowObject, req, res ){
                     nowObject.placesAround = JSON.parse(body).results[0];
                     nowObject.eventStatus = 1;
 
-                    nowObject.save(function(err) {
-                       if(err) {
-                         console.log('Error while saving now : ' + err);
-                       } else {
-                         console.log("Places and middlePoint saved");
-                         if(req != null && res !=null)
-                         {
-                           // NEXT VERSION : Quality first, THEN distance
-                           /*if(nowObject.placesAround == [])
+                    // NEXT VERSION : Quality first, THEN distance
+                    if(nowObject.placesAround == null && nowObject.rankBy != "DISTANCE")
+                    {
+                      nowObject.rankBy = 'DISTANCE';
+                      nowObject.save();
+                      calculateDestination(nowObject, req, res);
+                      return;
+                    }
+                    else
+                    {
+                      nowObject.save(function(err) {
+                         if(err) {
+                           console.log('Error while saving now : ' + err);
+                         } else {
+                           console.log("Places and middlePoint saved");
+                           if(req != null && res !=null)
                            {
-                             nowObject.rankby = "DISTANCE";
-                             nowObject.save();
-                             calculateDestination(nowObject, req, res);
-                           }*/
-                           User.findOne({username:nowObject.owner}, function(err,user) {
-                             sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
-                           });
-                           User.findOne({username:nowObject.guest}, function(err,user) {
-                             sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
-                           });
+                             
+                              User.findOne({username:nowObject.owner}, function(err,user) {
+                                sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                              });
+                              User.findOne({username:nowObject.guest}, function(err,user) {
+                                sendPush(user, {type: "PLACE_FOUND" , now: nowObject});
+                              });
+                            
+                           }
                          }
-                       }
-                     });
+                       });
+                    }
+                    
 
                   }
                   else {
@@ -580,6 +589,13 @@ function calculateDestination( nowObject, req, res ){
               } // end else if nowObject.type = "none"
               
             } // if JSON.parse(body).status == 'OK'
+            else if(JSON.parse(body).status == 'ZERO_RESULTS' && nowObject.travelMode == 'transit')
+            {
+              nowObject.travelMode = 'walking';
+              nowObject.save();
+              calculateDestination( nowObject, req, res );
+              return;
+            }
             else
             {
               console.log('No middlePoint found because of coordinates');
