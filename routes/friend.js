@@ -35,7 +35,7 @@ module.exports = function(app) {
           data: dataObject
       });
 
-      var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
+      var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // OBSOLETE, CHECK NEW KEY ON GOOGLE APIS PLACE
       var registrationId = user.GCMid;
   
       if(registrationId.length)
