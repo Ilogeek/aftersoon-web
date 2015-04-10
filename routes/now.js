@@ -34,7 +34,7 @@ module.exports = function(app) {
           data: dataObject
       });
 
-      var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // PRIVATE
+      var sender = new gcm.Sender('AIzaSyAZQzEx6O339rmn0jnYD_Ce0cM5I684Jgk'); // OBSOLETE, CHECK : https://console.developers.google.com to get the new key (AftersoonApp)
       var registrationId = user.GCMid;
 
       if(registrationId.length)
@@ -532,6 +532,7 @@ function calculateDestination( nowObject, req, res ){
               else
               {
                 // KEEP THE KEY PRIVATE PLEASE (Hugo)
+                // OBSOLETE, CHECK : https://console.developers.google.com to get the new key (AftersoonApp)
                 var apiKey         = "AIzaSyDlKaDgFHRsl6TbqSa9bYxspYwVCaZb_XM";
                 var radiusOrRankBy = "&radius="+nowObject.radius;
                 
